@@ -16,6 +16,7 @@ import {
 } from '@shopify/remix-oxygen';
 import {AppSession} from '~/lib/session';
 import {CART_QUERY_FRAGMENT} from '~/lib/fragments';
+import type {CountryCode} from '@shopify/hydrogen/storefront-api-types';
 
 /**
  * Export a fetch handler in module format.
@@ -40,13 +41,15 @@ export default {
         AppSession.init(request, [env.SESSION_SECRET]),
       ]);
 
+      const {locale, localizationCookie} = getLocaleFromRequest(request);
+
       /**
        * Create Hydrogen's Storefront client.
        */
       const {storefront} = createStorefrontClient({
         cache,
         waitUntil,
-        i18n: getLocaleFromRequest(request),
+        i18n: locale,
         publicStorefrontToken: env.PUBLIC_STOREFRONT_API_TOKEN,
         privateStorefrontToken: env.PRIVATE_STOREFRONT_API_TOKEN,
         storeDomain: env.PUBLIC_STORE_DOMAIN,
@@ -91,6 +94,7 @@ export default {
           cart,
           env,
           waitUntil,
+          locale,
         }),
       });
 
@@ -98,6 +102,14 @@ export default {
 
       if (session.isPending) {
         response.headers.set('Set-Cookie', await session.commit());
+      }
+
+      // Set the new cookie if necessary
+      if (localizationCookie) {
+        response.headers.append(
+          'Set-Cookie',
+          `${localizationCookie.name}=${localizationCookie.value}; Max-Age=${localizationCookie.maxAge}; Path=/; SameSite=Lax`,
+        );
       }
 
       if (response.status === 404) {
@@ -118,22 +130,59 @@ export default {
   },
 };
 
-function getLocaleFromRequest(request: Request): I18nLocale {
-  const defaultLocale: I18nLocale = {language: 'EN', country: 'US'};
-  const supportedLocales = {
-    ES: 'ES',
-    FR: 'FR',
-    DE: 'DE',
-    JP: 'JA',
-  } as Record<I18nLocale['country'], I18nLocale['language']>;
+interface LocaleResult {
+  locale: I18nLocale;
+  localizationCookie?: {name: string; value: string; maxAge: number};
+}
+
+export function getLocaleFromRequest(request: Request): LocaleResult {
+  const defaultLocale: I18nLocale = {language: 'EN', country: 'CA'};
+  const supportedCountries = ['US', 'CA', 'ES', 'FR', 'DE', 'JP'];
+  const oneYearInSeconds = 365 * 24 * 60 * 60;
 
   const url = new URL(request.url);
-  const domain = url.hostname
-    .split('.')
-    .pop()
-    ?.toUpperCase() as keyof typeof supportedLocales;
+  const countryParam = url.searchParams.get('country');
+  const cookies = parseCookies(request.headers.get('Cookie') || '');
+  const headerCountry = request.headers.get('oxygen-buyer-country');
 
-  return domain && supportedLocales[domain]
-    ? {language: supportedLocales[domain], country: domain}
-    : defaultLocale;
+  let country = defaultLocale.country as CountryCode | string;
+  let localizationCookie:
+    | {name: string; value: string; maxAge: number}
+    | undefined;
+
+  // Check URL parameter and set cookie only if it's provided
+  if (countryParam && supportedCountries.includes(countryParam)) {
+    country = countryParam;
+    localizationCookie = {
+      name: 'localization',
+      value: countryParam,
+      maxAge: oneYearInSeconds,
+    };
+  }
+  // Check existing cookie
+  else if (
+    cookies.localization &&
+    supportedCountries.includes(cookies.localization)
+  ) {
+    country = cookies.localization;
+  }
+  // Check header
+  else if (headerCountry && supportedCountries.includes(headerCountry)) {
+    country = headerCountry;
+  }
+
+  return {
+    locale: {language: defaultLocale.language, country: country as CountryCode},
+    localizationCookie,
+  };
+}
+
+function parseCookies(cookieHeader: string): Record<string, string> {
+  return cookieHeader.split(';').reduce((cookies, cookie) => {
+    const [name, value] = cookie.split('=').map((c) => c.trim());
+    if (name && value) {
+      cookies[name] = value;
+    }
+    return cookies;
+  }, {} as Record<string, string>);
 }
