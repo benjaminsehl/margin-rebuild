@@ -9,7 +9,7 @@ import {
 } from '@shopify/hydrogen';
 import type {SelectedOption} from '@shopify/hydrogen/storefront-api-types';
 import {getVariantUrl} from '~/lib/variants';
-import {ProductPrice} from '~/components/ProductPrice';
+import {Price, PriceCompareAt} from '@h2/Price';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
 
@@ -140,10 +140,10 @@ export default function Product() {
       <ProductImage image={selectedVariant?.image} />
       <div className="product-main">
         <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
+        <div>
+          <Price variant={selectedVariant} />
+          <PriceCompareAt variant={selectedVariant} />
+        </div>
         <br />
         <Suspense
           fallback={

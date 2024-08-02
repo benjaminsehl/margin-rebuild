@@ -137,7 +137,8 @@ interface LocaleResult {
 
 export function getLocaleFromRequest(request: Request): LocaleResult {
   const defaultLocale: I18nLocale = {language: 'EN', country: 'CA'};
-  const supportedCountries = ['US', 'CA', 'ES', 'FR', 'DE', 'JP'];
+  const supportedCountries = ['US', 'CA', 'ES', 'FR', 'DE', 'JP'] as const;
+  const supportedLanguages = ['EN', 'FR', 'ES', 'DE', 'JA'] as const;
   const oneYearInSeconds = 365 * 24 * 60 * 60;
 
   const url = new URL(request.url);
@@ -145,14 +146,31 @@ export function getLocaleFromRequest(request: Request): LocaleResult {
   const cookies = parseCookies(request.headers.get('Cookie') || '');
   const headerCountry = request.headers.get('oxygen-buyer-country');
 
-  let country = defaultLocale.country as CountryCode | string;
+  let country = defaultLocale.country as CountryCode;
+  let language = defaultLocale.language;
   let localizationCookie:
     | {name: string; value: string; maxAge: number}
     | undefined;
 
+  // Determine language from URL path
+  const pathSegments = url.pathname.split('/').filter((segment) => segment);
+  const firstPathSegment = pathSegments[0]?.toUpperCase();
+  if (
+    supportedLanguages.includes(
+      firstPathSegment as (typeof supportedLanguages)[number],
+    )
+  ) {
+    language = firstPathSegment as (typeof supportedLanguages)[number];
+  }
+
   // Check URL parameter and set cookie only if it's provided
-  if (countryParam && supportedCountries.includes(countryParam)) {
-    country = countryParam;
+  if (
+    countryParam &&
+    supportedCountries.includes(
+      countryParam as (typeof supportedCountries)[number],
+    )
+  ) {
+    country = countryParam as CountryCode;
     localizationCookie = {
       name: 'localization',
       value: countryParam,
@@ -162,17 +180,24 @@ export function getLocaleFromRequest(request: Request): LocaleResult {
   // Check existing cookie
   else if (
     cookies.localization &&
-    supportedCountries.includes(cookies.localization)
+    supportedCountries.includes(
+      cookies.localization as (typeof supportedCountries)[number],
+    )
   ) {
-    country = cookies.localization;
+    country = cookies.localization as CountryCode;
   }
   // Check header
-  else if (headerCountry && supportedCountries.includes(headerCountry)) {
-    country = headerCountry;
+  else if (
+    headerCountry &&
+    supportedCountries.includes(
+      headerCountry as (typeof supportedCountries)[number],
+    )
+  ) {
+    country = headerCountry as CountryCode;
   }
 
   return {
-    locale: {language: defaultLocale.language, country: country as CountryCode},
+    locale: {language, country},
     localizationCookie,
   };
 }

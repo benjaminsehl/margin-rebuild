@@ -17,59 +17,48 @@ import appStyles from '~/styles/app.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from '~/components/PageLayout';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
+import {LocaleProvider, type I18nLocale} from '~/contexts/LocaleContext';
+import {getLocaleFromRequest} from '~/lib/locale';
 
 export type RootLoader = typeof loader;
 
-/**
- * This is important to avoid re-fetching root queries on sub-navigations
- */
+// Determine if we should revalidate the data on navigation
 export const shouldRevalidate: ShouldRevalidateFunction = ({
   formMethod,
   currentUrl,
   nextUrl,
 }) => {
-  // revalidate when a mutation is performed e.g add to cart, login...
-  if (formMethod && formMethod !== 'GET') {
-    return true;
-  }
-
-  // revalidate when manually revalidating via useRevalidator
-  if (currentUrl.toString() === nextUrl.toString()) {
-    return true;
-  }
-
-  return false;
+  // Always revalidate for non-GET form submissions
+  if (formMethod && formMethod !== 'GET') return true;
+  // Revalidate if the URL hasn't changed (e.g., only hash changed)
+  return currentUrl.toString() === nextUrl.toString();
 };
 
+// Define stylesheets and other link tags for the app
 export function links() {
   return [
     {rel: 'stylesheet', href: tailwindCss},
     {rel: 'stylesheet', href: resetStyles},
     {rel: 'stylesheet', href: appStyles},
-    {
-      rel: 'preconnect',
-      href: 'https://cdn.shopify.com',
-    },
-    {
-      rel: 'preconnect',
-      href: 'https://shop.app',
-    },
+    {rel: 'preconnect', href: 'https://cdn.shopify.com'},
+    {rel: 'preconnect', href: 'https://shop.app'},
     {rel: 'icon', type: 'image/svg+xml', href: favicon},
   ];
 }
 
-export async function loader(args: LoaderFunctionArgs) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
+export async function loader({request, context}: LoaderFunctionArgs) {
+  const {locale, localizationCookie} = getLocaleFromRequest(request);
+  const {storefront, env} = context;
 
-  // Await the critical data required to render initial state of the page
-  const criticalData = await loadCriticalData(args);
+  // Load critical data first
+  const criticalData = await loadCriticalData(context);
 
-  const {storefront, env} = args.context;
+  // Start loading deferred data without waiting for it
+  const deferredData = loadDeferredData(context);
 
-  return defer({
-    ...deferredData,
-    ...criticalData,
+  const loaderData = {
+    // Load basic context required for the app
+    locale,
     publicStoreDomain: env.PUBLIC_STORE_DOMAIN,
     shop: getShopAnalytics({
       storefront,
@@ -79,56 +68,52 @@ export async function loader(args: LoaderFunctionArgs) {
       checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
       storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
     },
-  });
-}
-
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
-async function loadCriticalData({context}: LoaderFunctionArgs) {
-  const {storefront} = context;
-
-  const [header] = await Promise.all([
-    storefront.query(HEADER_QUERY, {
-      cache: storefront.CacheLong(),
-      variables: {
-        headerMenuHandle: 'main-menu', // Adjust to your header menu handle
-      },
-    }),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
-
-  return {
-    header,
+    // Load the critical data first
+    ...criticalData,
+    // Defer the non-critical data
+    ...deferredData,
   };
+
+  // Create a deferred response with all the loader data
+  const response = new Response(null, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  // Set localization cookie if available
+  if (localizationCookie) {
+    response.headers.set(
+      'Set-Cookie',
+      `${localizationCookie.name}=${localizationCookie.value}; Max-Age=${localizationCookie.maxAge}; Path=/; SameSite=Lax`,
+    );
+  }
+
+  return defer(loaderData, {headers: response.headers});
 }
 
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
-function loadDeferredData({context}: LoaderFunctionArgs) {
-  const {storefront, customerAccount, cart} = context;
+async function loadCriticalData({storefront}: LoaderFunctionArgs['context']) {
+  const header = await storefront.query(HEADER_QUERY, {
+    cache: storefront.CacheLong(),
+    variables: {headerMenuHandle: 'main-menu'},
+  });
+  return {header};
+}
 
-  // defer the footer query (below the fold)
-  const footer = storefront
-    .query(FOOTER_QUERY, {
-      cache: storefront.CacheLong(),
-      variables: {
-        footerMenuHandle: 'footer', // Adjust to your footer menu handle
-      },
-    })
-    .catch((error) => {
-      // Log query errors, but don't throw them so the page can still render
-      console.error(error);
-      return null;
-    });
+function loadDeferredData({
+  storefront,
+  customerAccount,
+  cart,
+}: LoaderFunctionArgs['context']) {
   return {
+    footer: storefront
+      .query(FOOTER_QUERY, {
+        cache: storefront.CacheLong(),
+        variables: {footerMenuHandle: 'footer'},
+      })
+      .catch(console.error),
     cart: cart.get(),
     isLoggedIn: customerAccount.isLoggedIn(),
-    footer,
   };
 }
 
@@ -136,8 +121,13 @@ export function Layout({children}: {children?: React.ReactNode}) {
   const nonce = useNonce();
   const data = useRouteLoaderData<RootLoader>('root');
 
+  if (!data || !data.locale) {
+    // Handle the case where data or locale is undefined
+    return <div>Loading...</div>;
+  }
+
   return (
-    <html lang="en">
+    <html lang={data.locale.language.toLowerCase()}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -145,7 +135,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Links />
       </head>
       <body>
-        {data ? (
+        <LocaleProvider initialLocale={data.locale}>
           <Analytics.Provider
             cart={data.cart}
             shop={data.shop}
@@ -153,9 +143,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
           >
             <PageLayout {...data}>{children}</PageLayout>
           </Analytics.Provider>
-        ) : (
-          children
-        )}
+        </LocaleProvider>
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
       </body>
@@ -169,15 +157,12 @@ export default function App() {
 
 export function ErrorBoundary() {
   const error = useRouteError();
-  let errorMessage = 'Unknown error';
-  let errorStatus = 500;
-
-  if (isRouteErrorResponse(error)) {
-    errorMessage = error?.data?.message ?? error.data;
-    errorStatus = error.status;
-  } else if (error instanceof Error) {
-    errorMessage = error.message;
-  }
+  const errorMessage = isRouteErrorResponse(error)
+    ? error?.data?.message ?? error.data
+    : error instanceof Error
+    ? error.message
+    : 'Unknown error';
+  const errorStatus = isRouteErrorResponse(error) ? error.status : 500;
 
   return (
     <div className="route-error">

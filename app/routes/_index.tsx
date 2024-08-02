@@ -1,5 +1,6 @@
 import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {Await, useLoaderData, Link, type MetaFunction} from '@remix-run/react';
+import {Await, useLoaderData, type MetaFunction} from '@remix-run/react';
+import Link from '@h2/Link';
 import {Suspense} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
 import type {

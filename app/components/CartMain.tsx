@@ -1,5 +1,5 @@
 import {type OptimisticCartLine, useOptimisticCart} from '@shopify/hydrogen';
-import {Link} from '@remix-run/react';
+import Link from '@h2/Link';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {CartLineItem} from '~/components/CartLineItem';
