@@ -1,6 +1,7 @@
 import {Suspense} from 'react';
-import {Await, NavLink} from '@remix-run/react';
+import {Await} from '@remix-run/react';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import Link from '@h2/Link';
 
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
@@ -58,15 +59,9 @@ function FooterMenu({
             {item.title}
           </a>
         ) : (
-          <NavLink
-            end
-            key={item.id}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
+          <Link key={item.id} to={url}>
             {item.title}
-          </NavLink>
+          </Link>
         );
       })}
     </nav>

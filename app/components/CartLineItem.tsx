@@ -3,8 +3,8 @@ import type {CartLayout} from '~/components/CartMain';
 import {CartForm, Image, type OptimisticCartLine} from '@shopify/hydrogen';
 import {useVariantUrl} from '~/lib/variants';
 import Link from '@h2/Link';
-import {ProductPrice} from './ProductPrice';
 import {useAside} from './Aside';
+import {LineCost, LineCostCompareAt, Price, PriceCompareAt} from '@h2/Price';
 
 /**
  * A single line item in the cart. It displays the product image, title, price.
@@ -49,7 +49,10 @@ export function CartLineItem({
             <strong>{product.title}</strong>
           </p>
         </Link>
-        <ProductPrice price={line?.cost?.totalAmount} />
+        {/* <div>
+          <LineCost variant={line} />
+          <LineCostCompareAt variant={line} />
+        </div> */}
         <ul>
           {selectedOptions.map((option) => (
             <li key={option.name}>

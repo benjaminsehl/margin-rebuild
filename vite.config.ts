@@ -37,7 +37,15 @@ export default defineConfig({
        * Include 'example-dep' in the array below.
        * @see https://vitejs.dev/config/dep-optimization-options
        */
-      include: [],
+      include: [
+        'use-sync-external-store/shim/with-selector.js',
+        'prop-types',
+        'react-dom/client',
+        'debounce',
+        'scheduler',
+        'react-reconciler',
+        'react-reconciler/constants',
+      ],
     },
   },
 });
