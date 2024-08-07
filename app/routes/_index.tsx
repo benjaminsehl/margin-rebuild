@@ -14,7 +14,7 @@ export async function loader(args: LoaderFunctionArgs) {
 
 export default function Homepage() {
   return (
-    <div className="home" style={{width: '100vw', height: '100vh'}}>
+    <div className="home" style={{width: '100%', height: '100vh'}}>
       <Canvas style={{width: '100%', height: '100%'}}>
         <RainEffect />
       </Canvas>
