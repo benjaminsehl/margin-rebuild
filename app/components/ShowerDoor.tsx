@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {useFrame, useThree, extend} from '@react-three/fiber';
 import {
   type Mesh,
@@ -8,9 +8,10 @@ import {
   TextureLoader,
   Texture,
 } from 'three';
+import {useTexture} from '@react-three/drei';
 
 const vertexShader = `
-  varying vec2 vUv;
+  out vec2 vUv;
   void main() {
     vUv = uv;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
@@ -23,9 +24,10 @@ const fragmentShader = `
   uniform vec2 resolution;
   uniform vec3 mouse;
   uniform float time;
+  uniform float aspect;
   uniform sampler2D tex;
-  varying vec2 vUv;
-
+  in vec2 vUv;
+  
   #define T time
   #define R resolution
 
@@ -48,19 +50,20 @@ const fragmentShader = `
   }
 
   vec2 DropLayer2(vec2 uv, float t) {
-    vec2 UV = uv;
+    vec2 UV = uv * vec2(1,-1);
 
-    uv.y += t * 0.75;
+    UV.y += t * 0.75;
+
     vec2 a = vec2(6., 1.);
     vec2 grid = a * 2.;
-    vec2 id = floor(uv * grid);
+    vec2 id = floor(UV * grid);
 
     float colShift = N(id.x);
-    uv.y += colShift;
+    UV.y += colShift;
 
-    id = floor(uv * grid);
+    id = floor(UV * grid);
     vec3 n = N13(id.x * 35.2 + id.y * 2376.1);
-    vec2 st = fract(uv * grid) - vec2(.5, 0);
+    vec2 st = fract(UV * grid) - vec2(.5, 0);
 
     float x = n.x - .5;
 
@@ -119,30 +122,31 @@ const fragmentShader = `
   }
 
   void main() {
-    vec2 ratio = vec2(R.x / R.y, 1.);
-    vec2 uv = vUv;
-    vec2 UV = vUv;
-    vec2 M = mouse.xy * ratio;
-    float T = time * .2;
+    vec2 ratio = vec2(R.x/R.y,1.);
+    vec2 scaled = (vUv - .5) * (ratio.x < 1. ? vec2(aspect,1.) : vec2(1.,aspect)) + .5;
 
-    float t = T * .2;
-    float rainAmount = sin(T * .05) * .3 + .7;
-
-    uv *= 0.8;
-    float staticDrops = smoothstep(-.5, 1., rainAmount) * 2.;
+    vec2 M = (mouse.xy * 2. - 1.) * ratio ;  
+    vec2 uv = (vUv * 2. - 1.) * ratio * vec2(1.,-1.) * 0.425;   
+    vec2 p = ((scaled * 2. - 1.)* 0.925 + M * .0125)*.5+.5;
+    float d = smoothstep(0.0,0.4,length(mouse.xy * ratio-vUv* ratio));
+    float t = T *.2;
+    float rainAmount = (sin(t * 0.01) * 0.5 + .5)*d;
+    float maxBlur = mix(1., 8., rainAmount);
+    float minBlur = 2.;
+    float staticDrops = smoothstep(-.5, 1., rainAmount)*2.;
     float layer1 = smoothstep(.25, .75, rainAmount);
     float layer2 = smoothstep(.0, .5, rainAmount);
+    
     vec2 c = Drops(uv, t, staticDrops, layer1, layer2);
-
-    vec2 e = vec2(.001, 0.);
-    float cx = Drops(uv + e, t, staticDrops, layer1, layer2).x;
-    float cy = Drops(uv + e.yx, t, staticDrops, layer1, layer2).x;
-    vec2 n = vec2(cx - c.x, cy - c.x);
-
-    float focus = mix(8., .1, c.x);
-    vec3 col = texture2D(tex, UV + n, focus).rgb;
-
-    gl_FragColor = vec4(col, 1.0);
+    vec2 e = vec2(.00125, 0.);
+    float cx = Drops(uv+e, t, staticDrops, layer1, layer2).x;
+    float cy = Drops(uv+e.yx, t, staticDrops, layer1, layer2).x;
+    vec2 n = vec2(cx-c.x, cy-c.x);
+    float focus = mix(maxBlur-c.y, minBlur, smoothstep(.1, .2, c.x));
+    vec3 color = textureLod(tex, scaled + n * 0.25 , focus * d).rgb;
+    
+    gl_FragColor = vec4(color, 1.0);
+    
   }
 `;
 
@@ -152,10 +156,10 @@ class RainMaterial extends ShaderMaterial {
     super({
       uniforms: {
         resolution: {value: new Vector2()},
-        pointer: {value: new Vector3()},
+        mouse: {value: new Vector3()},
         time: {value: 0},
         tex: {value: new Texture()},
-        aspectRatio: {value: 1},
+        aspect: {value: 1},
         pixelRatio: {value: 1},
       },
       vertexShader,
@@ -183,32 +187,41 @@ const RainEffect: React.FC<RainEffectProps> = ({
   const {viewport, size} = useThree();
   const materialRef = useRef<RainMaterial>(null);
   const meshRef = useRef<Mesh>(null);
+  const [mousePressed, setMousePressed] = useState(false);
+  const pixelRatio = window.devicePixelRatio || 2;
 
-  const pixelRatio = window.devicePixelRatio;
+  const texture = useTexture(backgroundImage);
 
-  const texture = useMemo(() => {
-    const loader = new TextureLoader();
-    return loader.load(backgroundImage);
-  }, [backgroundImage]);
+  const getSize = (texture: Texture, size: Size) => {
+    return texture.image.width / texture.image.height > size.width / size.height
+      ? size.width / texture.image.width
+      : size.height / texture.image.height;
+  };
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.tex.value = texture;
+    }
+    return () => {};
+  }, []);
 
   useEffect(() => {
     if (materialRef.current) {
-      materialRef.current.uniforms.aspectRatio.value = viewport.aspect;
-      materialRef.current.uniforms.pixelRatio.value = pixelRatio; // Set pixelRatio uniform
+      materialRef.current.uniforms.aspect.value = getSize(texture, size);
+      materialRef.current.uniforms.pixelRatio.value = pixelRatio;
+      materialRef.current.uniforms.resolution.value.set(
+        size.width * pixelRatio,
+        size.height * pixelRatio,
+      );
     }
-  }, [viewport.aspect, pixelRatio]);
+  }, [size, pixelRatio, texture, viewport]);
 
   useFrame(({clock, pointer}) => {
     if (materialRef.current) {
       materialRef.current.uniforms.time.value = clock.getElapsedTime();
-      materialRef.current.uniforms.pointer.value.set(
-        (pointer.x * viewport.width) / 2,
-        (pointer.y * viewport.height) / 2,
-        0,
-      );
-      materialRef.current.uniforms.resolution.value.set(
-        size.width * pixelRatio,
-        size.height * pixelRatio,
+      materialRef.current.uniforms.mouse.value.set(
+        pointer.x * 0.5 + 0.5,
+        pointer.y * 0.5 + 0.5,
+        mousePressed,
       );
       materialRef.current.uniforms.tex.value = texture;
     }
