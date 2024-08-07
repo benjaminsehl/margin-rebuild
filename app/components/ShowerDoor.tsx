@@ -15,12 +15,14 @@ const fragmentShader = `
   precision highp float;
 
   uniform vec2 resolution;
-  uniform vec3 mouse;
+  uniform vec2 mouse;
+  uniform vec2 mousePositions[50];
   uniform float time;
   uniform float aspect;
   uniform sampler2D tex;
   uniform float imageAspect;
   uniform float viewportAspect;
+
   in vec2 vUv;
 
   #define T time
@@ -45,7 +47,7 @@ const fragmentShader = `
   }
 
   vec2 DropLayer2(vec2 uv, float t) {
-    vec2 UV = uv * vec2(1,-1);
+    vec2 UV = uv;
 
     UV.y += t * 0.75;
 
@@ -85,7 +87,7 @@ const fragmentShader = `
     float droplets = max(0., (sin(y * (1. - y) * 120.) - st.y)) * trail2 * trailFront * n.z;
     y = fract(y * 10.) + (st.y - .5);
     float dd = length(st - vec2(x, y));
-    droplets = smoothstep(.3, 0., dd);
+    droplets = smoothstep(.53, 0., dd);
     float m = mainDrop + droplets * r * trailFront;
 
     return vec2(m, trail);
@@ -93,6 +95,7 @@ const fragmentShader = `
 
   float StaticDrops(vec2 uv, float t) {
     uv *= 40.;
+    uv.y += t * 0.1;
 
     vec2 id = floor(uv);
     uv = fract(uv) - .5;
@@ -116,40 +119,59 @@ const fragmentShader = `
     return vec2(c, max(m1.y * l0, m2.y * l1));
   }
 
+  float getTrailInfluence(vec2 uv, vec2 trailPos, float strength) {
+    float dist = distance(uv, trailPos);
+    return smoothstep(0.1, 0.01, dist) * strength;
+  }
+
   void main() {
-    vec2 ratio = vec2(R.x/R.y,1.);
+    vec2 uv = vUv;
 
     vec2 scaled;
     if (imageAspect > viewportAspect) {
-      scaled = (vUv - 0.5) * vec2(viewportAspect / imageAspect, 1.0) + 0.5;
+      scaled = (uv - 0.5) * vec2(viewportAspect / imageAspect, 1.0) + 0.5;
     } else {
-      scaled = (vUv - 0.5) * vec2(1.0, imageAspect / viewportAspect) + 0.5;
+      scaled = (uv - 0.5) * vec2(1.0, imageAspect / viewportAspect) + 0.5;
     }
 
-    vec2 M = (mouse.xy * 2. - 1.) * ratio ;
-    vec2 uv = (vUv * 2. - 1.) * ratio * vec2(1.,-1.) * 0.425;
-    vec2 p = ((scaled * 2. - 1.)* 0.925 + M * .0125)*.5+.5;
-    float d = smoothstep(0.0,0.4,length(mouse.xy * ratio-vUv* ratio));
-    float t = T *.2;
-    float rainAmount = (sin(t * 0.01) * 0.5 + .5)*d;
-    float maxBlur = mix(1., 8., rainAmount);
-    float minBlur = 2.;
-    float staticDrops = smoothstep(-.5, 1., rainAmount)*2.;
-    float layer1 = smoothstep(.25, .75, rainAmount);
-    float layer2 = smoothstep(.0, .5, rainAmount);
+    float trailEffect = 0.0;
 
-    vec2 c = Drops(uv, t, staticDrops, layer1, layer2);
-    vec2 e = vec2(.00125, 0.);
-    float cx = Drops(uv+e, t, staticDrops, layer1, layer2).x;
-    float cy = Drops(uv+e.yx, t, staticDrops, layer1, layer2).x;
-    vec2 n = vec2(cx-c.x, cy-c.x);
-    float focus = mix(maxBlur-c.y, minBlur, smoothstep(.1, .2, c.x));
-    vec3 color = textureLod(tex, scaled + n * 0.25 , focus * d).rgb;
+    for (int i = 0; i < 50; i++) {
+        // Create a more gradual fade
+        float strength = smoothstep(1.0, 0.0, float(i) / 50.0);
+        trailEffect += getTrailInfluence(uv, mousePositions[i], strength);
+    }
+    trailEffect = smoothstep(0.0, 0.7, trailEffect); // Adjust these values to control overall effect strength
+
+    float rainAmount = mix(1.0, 0.1, trailEffect); // Allow some rain even in wiped areas
+
+    vec2 p = scaled;
+
+    float t = T * 0.2;
+    float maxBlur = mix(3.0, 6.0, rainAmount);
+    float minBlur = mix(0.5, 2.0, rainAmount);
+    float staticDrops = smoothstep(-0.5, 1.0, rainAmount) * 2.0;
+    float layer1 = smoothstep(0.25, 0.75, rainAmount);
+    float layer2 = smoothstep(0.0, 0.5, rainAmount);
+
+    vec2 c = Drops(p, t, staticDrops, layer1, layer2);
+    vec2 e = vec2(0.001, 0.0);
+    float cx = Drops(p + e, t, staticDrops, layer1, layer2).x;
+    float cy = Drops(p + e.yx, t, staticDrops, layer1, layer2).x;
+    vec2 n = vec2(cx - c.x, cy - c.x);
+
+    float focus = mix(maxBlur - c.y, minBlur, smoothstep(0.1, 0.2, c.x));
+    vec3 color = textureLod(tex, scaled + n * 0.2, focus * (1.0 - trailEffect * 0.5)).rgb;
 
     gl_FragColor = vec4(color, 1.0);
-
   }
 `;
+
+const MAX_TRAIL_LENGTH = 50; // Increase the number of stored positions
+
+const mousePoints = Array(MAX_TRAIL_LENGTH)
+  .fill(0)
+  .map(() => new Vector2());
 
 // Define RainMaterial as a class
 class RainMaterial extends ShaderMaterial {
@@ -157,7 +179,10 @@ class RainMaterial extends ShaderMaterial {
     super({
       uniforms: {
         resolution: {value: new Vector2()},
-        mouse: {value: new Vector3()},
+        mouse: {value: new Vector2()},
+        mousePositions: {
+          value: mousePoints,
+        },
         time: {value: 0},
         tex: {value: new Texture()},
         aspect: {value: 1},
@@ -190,7 +215,6 @@ const RainEffect: React.FC<RainEffectProps> = ({
   const {viewport, size} = useThree();
   const materialRef = useRef<RainMaterial>(null);
   const meshRef = useRef<Mesh>(null);
-  const [mousePressed, setMousePressed] = useState(false);
   const pixelRatio = window.devicePixelRatio || 2;
 
   const texture = useTexture(backgroundImage);
@@ -200,10 +224,8 @@ const RainEffect: React.FC<RainEffectProps> = ({
     const viewportAspect = size.width / size.height;
 
     if (imageAspect > viewportAspect) {
-      // Image is wider than viewport
       return size.height / texture.image.height;
     } else {
-      // Image is taller than viewport
       return size.width / texture.image.width;
     }
   };
@@ -231,14 +253,39 @@ const RainEffect: React.FC<RainEffectProps> = ({
     }
   }, [size, pixelRatio, texture, viewport]);
 
+  const mousePositions = useRef<Vector2[]>(
+    Array(MAX_TRAIL_LENGTH)
+      .fill(0)
+      .map(() => new Vector2()),
+  );
+  const lastUpdateTime = useRef(0);
+
   useFrame(({clock, pointer}) => {
     if (materialRef.current) {
-      materialRef.current.uniforms.time.value = clock.getElapsedTime();
-      materialRef.current.uniforms.mouse.value.set(
-        pointer.x * 0.5 + 0.5,
-        pointer.y * 0.5 + 0.5,
-        mousePressed,
-      );
+      const currentTime = clock.getElapsedTime();
+      const timeDelta = currentTime - lastUpdateTime.current;
+
+      // Only update trail every few frames to spread out positions
+      if (timeDelta > 0.05) {
+        // Adjust this value to change spread
+        // Shift existing positions
+        for (let i = mousePositions.current.length - 1; i > 0; i--) {
+          mousePositions.current[i].copy(mousePositions.current[i - 1]);
+        }
+        // Add new position
+        mousePositions.current[0].set(
+          pointer.x * 0.5 + 0.5,
+          pointer.y * 0.5 + 0.5,
+        );
+
+        lastUpdateTime.current = currentTime;
+      }
+
+      // Update shader uniforms
+      materialRef.current.uniforms.mousePositions.value =
+        mousePositions.current;
+      materialRef.current.uniforms.time.value = currentTime;
+
       materialRef.current.uniforms.tex.value = texture;
     }
   });
