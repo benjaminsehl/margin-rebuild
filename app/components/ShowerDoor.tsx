@@ -1,13 +1,6 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
-import {useFrame, useThree, extend} from '@react-three/fiber';
-import {
-  type Mesh,
-  ShaderMaterial,
-  Vector2,
-  Vector3,
-  TextureLoader,
-  Texture,
-} from 'three';
+import React, {useEffect, useRef, useState} from 'react';
+import {useFrame, useThree, extend, type Size} from '@react-three/fiber';
+import {type Mesh, ShaderMaterial, Vector2, Vector3, Texture} from 'three';
 import {useTexture} from '@react-three/drei';
 
 const vertexShader = `
@@ -26,8 +19,10 @@ const fragmentShader = `
   uniform float time;
   uniform float aspect;
   uniform sampler2D tex;
+  uniform float imageAspect;
+  uniform float viewportAspect;
   in vec2 vUv;
-  
+
   #define T time
   #define R resolution
 
@@ -123,10 +118,16 @@ const fragmentShader = `
 
   void main() {
     vec2 ratio = vec2(R.x/R.y,1.);
-    vec2 scaled = (vUv - .5) * (ratio.x < 1. ? vec2(aspect,1.) : vec2(1.,aspect)) + .5;
 
-    vec2 M = (mouse.xy * 2. - 1.) * ratio ;  
-    vec2 uv = (vUv * 2. - 1.) * ratio * vec2(1.,-1.) * 0.425;   
+    vec2 scaled;
+    if (imageAspect > viewportAspect) {
+      scaled = (vUv - 0.5) * vec2(viewportAspect / imageAspect, 1.0) + 0.5;
+    } else {
+      scaled = (vUv - 0.5) * vec2(1.0, imageAspect / viewportAspect) + 0.5;
+    }
+
+    vec2 M = (mouse.xy * 2. - 1.) * ratio ;
+    vec2 uv = (vUv * 2. - 1.) * ratio * vec2(1.,-1.) * 0.425;
     vec2 p = ((scaled * 2. - 1.)* 0.925 + M * .0125)*.5+.5;
     float d = smoothstep(0.0,0.4,length(mouse.xy * ratio-vUv* ratio));
     float t = T *.2;
@@ -136,7 +137,7 @@ const fragmentShader = `
     float staticDrops = smoothstep(-.5, 1., rainAmount)*2.;
     float layer1 = smoothstep(.25, .75, rainAmount);
     float layer2 = smoothstep(.0, .5, rainAmount);
-    
+
     vec2 c = Drops(uv, t, staticDrops, layer1, layer2);
     vec2 e = vec2(.00125, 0.);
     float cx = Drops(uv+e, t, staticDrops, layer1, layer2).x;
@@ -144,9 +145,9 @@ const fragmentShader = `
     vec2 n = vec2(cx-c.x, cy-c.x);
     float focus = mix(maxBlur-c.y, minBlur, smoothstep(.1, .2, c.x));
     vec3 color = textureLod(tex, scaled + n * 0.25 , focus * d).rgb;
-    
+
     gl_FragColor = vec4(color, 1.0);
-    
+
   }
 `;
 
@@ -161,6 +162,8 @@ class RainMaterial extends ShaderMaterial {
         tex: {value: new Texture()},
         aspect: {value: 1},
         pixelRatio: {value: 1},
+        imageAspect: {value: 1},
+        viewportAspect: {value: 1},
       },
       vertexShader,
       fragmentShader,
@@ -193,19 +196,32 @@ const RainEffect: React.FC<RainEffectProps> = ({
   const texture = useTexture(backgroundImage);
 
   const getSize = (texture: Texture, size: Size) => {
-    return texture.image.width / texture.image.height > size.width / size.height
-      ? size.width / texture.image.width
-      : size.height / texture.image.height;
+    const imageAspect = texture.image.width / texture.image.height;
+    const viewportAspect = size.width / size.height;
+
+    if (imageAspect > viewportAspect) {
+      // Image is wider than viewport
+      return size.height / texture.image.height;
+    } else {
+      // Image is taller than viewport
+      return size.width / texture.image.width;
+    }
   };
+
   useEffect(() => {
     if (materialRef.current) {
       materialRef.current.uniforms.tex.value = texture;
     }
     return () => {};
-  }, []);
+  }, [texture]);
 
   useEffect(() => {
-    if (materialRef.current) {
+    if (materialRef.current && texture.image) {
+      const imageAspect = texture.image.width / texture.image.height;
+      const viewportAspect = size.width / size.height;
+
+      materialRef.current.uniforms.imageAspect.value = imageAspect;
+      materialRef.current.uniforms.viewportAspect.value = viewportAspect;
       materialRef.current.uniforms.aspect.value = getSize(texture, size);
       materialRef.current.uniforms.pixelRatio.value = pixelRatio;
       materialRef.current.uniforms.resolution.value.set(
