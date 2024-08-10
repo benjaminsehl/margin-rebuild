@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {useFrame, useThree, extend, type Size} from '@react-three/fiber';
-import {type Mesh, ShaderMaterial, Vector2, Vector3, Texture} from 'three';
+import {type Mesh, ShaderMaterial, Vector2, Texture} from 'three';
 import {useTexture} from '@react-three/drei';
 
 const vertexShader = `
@@ -16,7 +16,7 @@ const fragmentShader = `
 
   uniform vec2 resolution;
   uniform vec2 mouse;
-  uniform vec2 mousePositions[50];
+  uniform vec2 mousePositions[25];
   uniform float time;
   uniform float aspect;
   uniform sampler2D tex;
@@ -46,14 +46,17 @@ const fragmentShader = `
     return smoothstep(0., b, t) * smoothstep(1., b, t);
   }
 
-  vec2 DropLayer2(vec2 uv, float t) {
+vec2 DropLayer2(vec2 uv, float t) {
     vec2 UV = uv;
 
     UV.y += t * 0.75;
 
     vec2 a = vec2(6., 1.);
-    vec2 grid = a * 2.;
+    vec2 grid = a * 1.8;
     vec2 id = floor(UV * grid);
+
+    float randomAspect = mix(0.8, 1.2, N(id.x * 35.2 + id.y * 2376.1));
+    a.x *= randomAspect;
 
     float colShift = N(id.x);
     UV.y += colShift;
@@ -73,8 +76,10 @@ const fragmentShader = `
     vec2 p = vec2(x, y);
 
     float d = length((st - p) * a.yx);
-
-    float mainDrop = smoothstep(.4, .0, d);
+    float dropShape = smoothstep(0.4, 0.0, d);
+    float softEdge = smoothstep(0.5, 0.2, d);
+    float noise = fract(sin(dot(st, vec2(12.9898, 78.233))) * 43758.5453);
+    float mainDrop = mix(dropShape, softEdge, 0.5) * (1.0 + (noise - 0.5) * 0.2);
 
     float r = sqrt(smoothstep(1., y, st.y));
     float cd = abs(st.x - x);
@@ -87,11 +92,11 @@ const fragmentShader = `
     float droplets = max(0., (sin(y * (1. - y) * 120.) - st.y)) * trail2 * trailFront * n.z;
     y = fract(y * 10.) + (st.y - .5);
     float dd = length(st - vec2(x, y));
-    droplets = smoothstep(.53, 0., dd);
+    droplets = smoothstep(.3, 0., dd);
     float m = mainDrop + droplets * r * trailFront;
 
     return vec2(m, trail);
-  }
+}
 
   float StaticDrops(vec2 uv, float t) {
     uv *= 40.;
@@ -136,9 +141,9 @@ const fragmentShader = `
 
     float trailEffect = 0.0;
 
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 25; i++) {
         // Create a more gradual fade
-        float strength = smoothstep(1.0, 0.0, float(i) / 50.0);
+        float strength = smoothstep(1.0, 0.0, float(i) / 25.0);
         trailEffect += getTrailInfluence(uv, mousePositions[i], strength);
     }
     trailEffect = smoothstep(0.0, 0.7, trailEffect); // Adjust these values to control overall effect strength
@@ -167,7 +172,7 @@ const fragmentShader = `
   }
 `;
 
-const MAX_TRAIL_LENGTH = 50; // Increase the number of stored positions
+const MAX_TRAIL_LENGTH = 25; // Increase the number of stored positions
 
 const mousePoints = Array(MAX_TRAIL_LENGTH)
   .fill(0)

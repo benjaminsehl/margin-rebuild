@@ -1,29 +1,22 @@
-import {Suspense, lazy} from 'react';
-import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {type MetaFunction} from '@remix-run/react';
-
+import {lazy, Suspense} from 'react';
+const RainEffect = lazy(() => import('~/components/RainEffect'));
 const Canvas = lazy(() =>
   import('@react-three/fiber').then((module) => ({default: module.Canvas})),
 );
 
-const RainEffect = lazy(() => import('~/components/RainEffect'));
-
-export const meta: MetaFunction = () => {
-  return [{title: 'Margin'}];
-};
-
-export async function loader(args: LoaderFunctionArgs) {
-  return defer({});
-}
-
-export default function Homepage() {
+export default function Hero() {
   return (
-    <div className="home" style={{width: '100%', height: '100vh'}}>
+    <div className="w-full h-screen overflow-hidden">
       <Suspense fallback={<BackgroundFallback />}>
         <Canvas style={{width: '100%', height: '100%'}}>
           <RainEffect />
         </Canvas>
       </Suspense>
+      <div>
+        <h1 className="absolute bottom-0 left-0 text-white text-4xl font-bold text-center mt-20">
+          Margin
+        </h1>
+      </div>
     </div>
   );
 }

@@ -12,12 +12,13 @@ import {
   type ShouldRevalidateFunction,
 } from '@remix-run/react';
 import favicon from '~/assets/favicon.svg';
+import '@radix-ui/themes/styles.css';
 import appStyles from '~/styles/app.css?url';
-import tailwindCss from './styles/tailwind.css?url';
-import {PageLayout} from '~/components/PageLayout';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 import {LocaleProvider, type I18nLocale} from '~/contexts/LocaleContext';
 import {getLocaleFromRequest} from '~/lib/locale';
+import {Theme} from '@radix-ui/themes';
+import {useRouteLayout} from './lib/layout';
 
 export type RootLoader = typeof loader;
 
@@ -36,7 +37,6 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
 // Define stylesheets and other link tags for the app
 export function links() {
   return [
-    {rel: 'stylesheet', href: tailwindCss},
     {rel: 'stylesheet', href: appStyles},
     {rel: 'preconnect', href: 'https://cdn.shopify.com'},
     {rel: 'preconnect', href: 'https://shop.app'},
@@ -118,6 +118,7 @@ function loadDeferredData({
 export function Layout({children}: {children?: React.ReactNode}) {
   const nonce = useNonce();
   const data = useRouteLoaderData<RootLoader>('root');
+  const Layout = useRouteLayout();
 
   if (!data || !data.locale) {
     // Handle the case where data or locale is undefined
@@ -133,15 +134,17 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Links />
       </head>
       <body>
-        <LocaleProvider initialLocale={data.locale}>
-          <Analytics.Provider
-            cart={data.cart}
-            shop={data.shop}
-            consent={data.consent}
-          >
-            <PageLayout {...data}>{children}</PageLayout>
-          </Analytics.Provider>
-        </LocaleProvider>
+        <Theme>
+          <LocaleProvider initialLocale={data.locale}>
+            <Analytics.Provider
+              cart={data.cart}
+              shop={data.shop}
+              consent={data.consent}
+            >
+              <Layout {...data}>{children}</Layout>
+            </Analytics.Provider>
+          </LocaleProvider>
+        </Theme>
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
       </body>

@@ -15,6 +15,7 @@ import React from 'react';
 import {Link as RemixLink, useLocation} from '@remix-run/react';
 import type {LinkProps} from '@remix-run/react';
 import {useLocale} from '~/contexts/LocaleContext';
+import {Text} from '@radix-ui/themes';
 
 /**
  * Props for the LocalizedLink component.
@@ -39,6 +40,8 @@ interface LocalizedLinkProps extends Omit<LinkProps, 'to'> {
    * regardless of the 'to' prop format.
    */
   external?: boolean;
+
+  children: React.ReactNode;
 }
 
 /**
@@ -66,6 +69,7 @@ export default function Link({
   prefetch = 'viewport',
   to,
   ignoreLocale = false,
+  children,
   external: forceExternal,
   ...rest
 }: LocalizedLinkProps) {
@@ -116,11 +120,15 @@ export default function Link({
   }
 
   return (
-    <RemixLink
-      unstable_viewTransition
-      prefetch={prefetch}
-      to={localizedTo}
-      {...rest}
-    />
+    <Text asChild>
+      <RemixLink
+        unstable_viewTransition
+        prefetch={prefetch}
+        to={localizedTo}
+        {...rest}
+      >
+        {children}
+      </RemixLink>
+    </Text>
   );
 }

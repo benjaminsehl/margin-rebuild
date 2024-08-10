@@ -1,4 +1,4 @@
-import {Await} from '@remix-run/react';
+import {Await, useLocation} from '@remix-run/react';
 import {Suspense} from 'react';
 import type {
   CartApiQueryFragment,
@@ -23,7 +23,7 @@ interface PageLayoutProps {
   children?: React.ReactNode;
 }
 
-export function PageLayout({
+function Layout({
   cart,
   children = null,
   footer,
@@ -31,25 +31,28 @@ export function PageLayout({
   isLoggedIn,
   publicStoreDomain,
 }: PageLayoutProps) {
+  const {pathname} = useLocation();
   return (
     <Aside.Provider>
       <CartAside cart={cart} />
       <SearchAside />
       <MobileMenuAside header={header} publicStoreDomain={publicStoreDomain} />
-      {/* {header && (
+      {header && (
         <Header
           header={header}
           cart={cart}
           isLoggedIn={isLoggedIn}
           publicStoreDomain={publicStoreDomain}
         />
-      )} */}
+      )}
       <main>{children}</main>
-      {/* <Footer
-        footer={footer}
-        header={header}
-        publicStoreDomain={publicStoreDomain}
-      /> */}
+      {pathname !== '/' && (
+        <Footer
+          footer={footer}
+          header={header}
+          publicStoreDomain={publicStoreDomain}
+        />
+      )}
     </Aside.Provider>
   );
 }
@@ -124,3 +127,5 @@ function MobileMenuAside({
     )
   );
 }
+
+export default Layout;
