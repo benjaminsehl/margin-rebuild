@@ -32,7 +32,7 @@ const fragmentShader = `
     vec3 p3 = fract(vec3(p) * vec3(.1031, .11369, .13787));
     p3 += dot(p3, p3.yzx + 19.19);
     return fract(vec3((p3.x + p3.y) * p3.z, (p3.x + p3.z) * p3.y, (p3.y + p3.z) * p3.x));
-  }
+}
 
   vec4 N14(float t) {
     return fract(sin(t * vec4(123., 1024., 1456., 264.)) * vec4(6547., 345., 8799., 1564.));
@@ -55,7 +55,7 @@ vec2 DropLayer2(vec2 uv, float t) {
     vec2 grid = a * 1.8;
     vec2 id = floor(UV * grid);
 
-    float randomAspect = mix(0.8, 1.2, N(id.x * 35.2 + id.y * 2376.1));
+    float randomAspect = mix(0.6, 1.4, N(id.x * 35.2 + id.y * 2376.1)); // Changed range from 0.8-1.2 to 0.7-1.3
     a.x *= randomAspect;
 
     float colShift = N(id.x);
@@ -76,8 +76,8 @@ vec2 DropLayer2(vec2 uv, float t) {
     vec2 p = vec2(x, y);
 
     float d = length((st - p) * a.yx);
-    float dropShape = smoothstep(0.4, 0.0, d);
-    float softEdge = smoothstep(0.5, 0.2, d);
+    float dropShape = smoothstep(0.2, 0.0, d); // Changed from 0.4 to 0.35
+    float softEdge = smoothstep(0.25, 0.2, d); // Changed from 0.5, 0.2 to 0.45, 0.15
     float noise = fract(sin(dot(st, vec2(12.9898, 78.233))) * 43758.5453);
     float mainDrop = mix(dropShape, softEdge, 0.5) * (1.0 + (noise - 0.5) * 0.2);
 
@@ -93,7 +93,7 @@ vec2 DropLayer2(vec2 uv, float t) {
     y = fract(y * 10.) + (st.y - .5);
     float dd = length(st - vec2(x, y));
     droplets = smoothstep(.3, 0., dd);
-    float m = mainDrop + droplets * r * trailFront;
+    float m = mix(mainDrop, droplets * r * trailFront, 0.5); // Blend with a mix function
 
     return vec2(m, trail);
 }
@@ -271,7 +271,7 @@ const RainEffect: React.FC<RainEffectProps> = ({
       const timeDelta = currentTime - lastUpdateTime.current;
 
       // Only update trail every few frames to spread out positions
-      if (timeDelta > 0.05) {
+      if (timeDelta > 0.06) {
         // Adjust this value to change spread
         // Shift existing positions
         for (let i = mousePositions.current.length - 1; i > 0; i--) {

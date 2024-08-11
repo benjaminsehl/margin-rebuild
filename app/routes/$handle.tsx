@@ -1,5 +1,6 @@
 import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {useLoaderData, type MetaFunction} from '@remix-run/react';
+import {Container} from '~/components';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [{title: `Hydrogen | ${data?.page.title ?? ''}`}];
@@ -55,12 +56,12 @@ export default function Page() {
   const {page} = useLoaderData<typeof loader>();
 
   return (
-    <div className="page">
+    <Container columns="1" pt="8rem">
       <header>
         <h1>{page.title}</h1>
       </header>
       <main dangerouslySetInnerHTML={{__html: page.body}} />
-    </div>
+    </Container>
   );
 }
 

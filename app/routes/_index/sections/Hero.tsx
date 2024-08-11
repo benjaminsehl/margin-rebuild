@@ -13,7 +13,7 @@ export default function Hero() {
         </Canvas>
       </Suspense>
       <div>
-        <h1 className="absolute bottom-0 left-0 text-white text-4xl font-bold text-center mt-20">
+        <h1 className="absolute bottom-4 left-4 text-white text-4xl font-bold text-center mt-20">
           Margin
         </h1>
       </div>
@@ -24,13 +24,10 @@ export default function Hero() {
 function BackgroundFallback() {
   return (
     <div
+      className="w-full h-full bg-cover bg-center"
       style={{
         backgroundImage:
           'url(https://cdn.shopify.com/s/files/1/0817/9308/9592/files/background-image.jpg?v=1720660332)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        width: '100%',
-        height: '100%',
       }}
     ></div>
   );

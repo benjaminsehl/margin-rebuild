@@ -110,12 +110,9 @@ export default function Link({
   if (isExternal) {
     return (
       // eslint-disable-next-line jsx-a11y/anchor-has-content
-      <a
-        href={localizedTo}
-        rel="noopener noreferrer"
-        target="_blank"
-        {...rest}
-      />
+      <a href={localizedTo} rel="noopener noreferrer" target="_blank" {...rest}>
+        {children}
+      </a>
     );
   }
 

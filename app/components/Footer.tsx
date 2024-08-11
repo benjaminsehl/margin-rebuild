@@ -2,6 +2,8 @@ import {Suspense} from 'react';
 import {Await} from '@remix-run/react';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
 import Link from '@h2/Link';
+import {Box, Flex, Text} from '@radix-ui/themes';
+import Container from './Container';
 
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
@@ -18,7 +20,7 @@ export function Footer({
     <Suspense>
       <Await resolve={footerPromise}>
         {(footer) => (
-          <footer className="footer w-screen overflow-hidden">
+          <footer className="w-screen overflow-hidden">
             {footer?.menu && header.shop.primaryDomain?.url && (
               <FooterMenu
                 menu={footer.menu}
@@ -43,28 +45,21 @@ function FooterMenu({
   publicStoreDomain: string;
 }) {
   return (
-    <nav className="footer-menu" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
-        if (!item.url) return null;
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        const isExternal = !url.startsWith('/');
-        return isExternal ? (
-          <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
-            {item.title}
-          </a>
-        ) : (
-          <Link key={item.id} to={url}>
-            {item.title}
-          </Link>
-        );
-      })}
-    </nav>
+    <Container columns="1">
+      <Flex asChild gapX="6" gapY="2" justify="between" wrap="wrap">
+        <nav role="navigation">
+          {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
+            return item?.url ? (
+              <Box key={item.id} gridColumn="span 3">
+                <Link className="whitespace-nowrap" to={item.url}>
+                  {item.title}
+                </Link>
+              </Box>
+            ) : null;
+          })}
+        </nav>
+      </Flex>
+    </Container>
   );
 }
 
@@ -109,16 +104,3 @@ const FALLBACK_FOOTER_MENU = {
     },
   ],
 };
-
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'white',
-  };
-}

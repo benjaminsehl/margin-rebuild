@@ -1,31 +1,42 @@
 import Link from '@h2/Link';
-import {type VariantOption, VariantSelector} from '@shopify/hydrogen';
-import type {
-  ProductFragment,
-  ProductVariantFragment,
-} from 'storefrontapi.generated';
+import {Await, useLoaderData} from '@remix-run/react';
+import {
+  useOptimisticVariant,
+  type VariantOption,
+  VariantSelector,
+} from '@shopify/hydrogen';
+import {Suspense} from 'react';
 import {AddToCartButton} from '~/components/AddToCartButton';
 import {useAside} from '~/components/Aside';
+import type {loader} from '~/routes/products.$handle/route';
 
-export function ProductForm({
-  product,
-  selectedVariant,
-  variants,
-}: {
-  product: ProductFragment;
-  selectedVariant: ProductFragment['selectedVariant'];
-  variants: Array<ProductVariantFragment>;
-}) {
+export function ProductForm() {
+  const {product, variants} = useLoaderData<typeof loader>();
+  const selectedVariant = useOptimisticVariant(
+    product.selectedVariant,
+    variants,
+  );
+
   const {open} = useAside();
   return (
     <div className="product-form">
-      <VariantSelector
-        handle={product.handle}
-        options={product.options.filter((option) => option.values.length > 1)}
-        variants={variants}
-      >
-        {({option}) => <ProductOptions key={option.name} option={option} />}
-      </VariantSelector>
+      <Suspense>
+        <Await resolve={variants}>
+          {(data) => (
+            <VariantSelector
+              handle={product.handle}
+              options={product.options.filter(
+                (option) => option.values.length > 1,
+              )}
+              variants={variants}
+            >
+              {({option}) => (
+                <ProductOptions key={option.name} option={option} />
+              )}
+            </VariantSelector>
+          )}
+        </Await>
+      </Suspense>
       <br />
       <AddToCartButton
         disabled={!selectedVariant || !selectedVariant.availableForSale}

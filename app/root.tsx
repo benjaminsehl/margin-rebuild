@@ -134,7 +134,8 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Links />
       </head>
       <body>
-        <Theme>
+        {/* TODO: Dark Mode support https://www.mattstobbs.com/remix-dark-mode/ */}
+        <Theme appearance="light" accentColor="yellow">
           <LocaleProvider initialLocale={data.locale}>
             <Analytics.Provider
               cart={data.cart}

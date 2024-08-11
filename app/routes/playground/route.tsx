@@ -18,8 +18,8 @@ export default function Homepage() {
   return (
     <>
       <Header />
-      <ProductDetails />
       {/* <Hero /> */}
+      <ProductDetails />
       <OurIngredients />
     </>
   );
