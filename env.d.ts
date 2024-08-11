@@ -17,6 +17,8 @@ import type {
 } from '@shopify/hydrogen/storefront-api-types';
 import type {AppSession} from '~/lib/session';
 
+import type {createAppLoadContext} from '~/lib/context';
+
 declare global {
   /**
    * A global `process` object is only available during build to access NODE_ENV.
@@ -47,15 +49,8 @@ declare module '@shopify/remix-oxygen' {
   /**
    * Declare local additions to the Remix loader context.
    */
-  interface AppLoadContext {
-    env: Env;
-    cart: HydrogenCart;
-    storefront: Storefront<I18nLocale>;
-    customerAccount: CustomerAccount;
-    session: AppSession;
-    waitUntil: ExecutionContext['waitUntil'];
-  }
-
+  interface AppLoadContext
+    extends Awaited<ReturnType<typeof createAppLoadContext>> {}
   /**
    * Declare local additions to the Remix session data.
    */

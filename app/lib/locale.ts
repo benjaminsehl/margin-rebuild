@@ -1,16 +1,14 @@
-// app/utils/locale.ts
-import type {CountryCode} from '@shopify/hydrogen/storefront-api-types';
-import type {I18nLocale} from '~/contexts/LocaleContext';
+import type {I18nBase} from '@shopify/hydrogen';
 
 interface LocaleResult {
-  locale: I18nLocale;
+  locale: I18nBase;
   localizationCookie?: {name: string; value: string; maxAge: number};
 }
 
 export function getLocaleFromRequest(request: Request): LocaleResult {
-  const defaultLocale: I18nLocale = {
+  const defaultLocale: I18nBase = {
     language: 'EN',
-    country: 'CA' as CountryCode,
+    country: 'CA',
   };
   const supportedCountries = ['US', 'CA', 'ES', 'FR', 'DE', 'JP'] as const;
   const supportedLanguages = ['EN', 'FR', 'ES', 'DE', 'JA'] as const;
@@ -45,7 +43,7 @@ export function getLocaleFromRequest(request: Request): LocaleResult {
       countryParam as (typeof supportedCountries)[number],
     )
   ) {
-    country = countryParam as CountryCode;
+    country = countryParam as I18nBase['country'];
     localizationCookie = {
       name: 'localization',
       value: countryParam,
@@ -59,7 +57,7 @@ export function getLocaleFromRequest(request: Request): LocaleResult {
       cookies.localization as (typeof supportedCountries)[number],
     )
   ) {
-    country = cookies.localization as CountryCode;
+    country = cookies.localization as I18nBase['country'];
   }
   // Check header
   else if (
@@ -68,7 +66,7 @@ export function getLocaleFromRequest(request: Request): LocaleResult {
       headerCountry as (typeof supportedCountries)[number],
     )
   ) {
-    country = headerCountry as CountryCode;
+    country = headerCountry as I18nBase['country'];
   }
 
   return {
