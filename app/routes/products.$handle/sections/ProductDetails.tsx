@@ -5,7 +5,7 @@ import {ProductForm} from '~/components/ProductForm';
 import * as Accordion from '@radix-ui/react-accordion';
 import type {loader} from '~/routes/products.$handle/route';
 import React from 'react';
-import {Text, Heading} from '~/components/Text';
+import {Text} from '~/components/Text';
 import {cx} from '@h2/utils';
 
 export default function ProductDetails() {
@@ -54,19 +54,23 @@ export default function ProductDetails() {
       <Flex direction="column" gap="7" gridColumn="8 / span 4">
         <Flex direction="column" gap="5">
           <Flex align="baseline" justify="between">
-            <Heading as="h1">{product.title}</Heading>
+            <h1>
+              <Text level="heading">{product.title}</Text>
+            </h1>
             <Text>★ 5</Text>
           </Flex>
-          <Text>
+          <Text className="prose">
             <span dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
           </Text>
         </Flex>
         <ProductForm />
-        <Accordion.Root type="single">
+        <Accordion.Root type="single" collapsible>
           {notes.map((note, index) => (
             <AccordionItem value={`item-${index + 1}`} key={note.id}>
               <AccordionTrigger>
-                <Heading as="h3">{note.title}</Heading>
+                <h3>
+                  <Text level="heading">{note.title}</Text>
+                </h3>
               </AccordionTrigger>
               <AccordionContent>{note.description}</AccordionContent>
             </AccordionItem>
@@ -83,11 +87,11 @@ const AccordionItem = React.forwardRef(
     forwardedRef: React.Ref<HTMLDivElement>,
   ) => (
     <Accordion.Item
-      className={cx('border-t overflow-hidden', className)}
+      className={cx('border-t border-foreground/25 overflow-hidden', className)}
       {...props}
       ref={forwardedRef}
     >
-      <Flex py="3" gap="3" direction="column">
+      <Flex pt="1" pb="5" gap="3" direction="column">
         {children}
       </Flex>
     </Accordion.Item>

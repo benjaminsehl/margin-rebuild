@@ -15,7 +15,7 @@ export default function Container({
         align={align}
         columns="12"
         gap="8"
-        maxWidth="83rem"
+        maxWidth=""
         width="100%"
         mx="auto"
         px="8"

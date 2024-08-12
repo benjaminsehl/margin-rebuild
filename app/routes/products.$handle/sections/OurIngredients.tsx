@@ -93,8 +93,10 @@ export default function OurIngredients() {
       </Container>
       <Container>
         <Box gridColumn={{initial: '8 / span 4'}}>
-          <Heading>Full Ingredients</Heading>
-          <Text>
+          <h3>
+            <Text level="fine">Full Ingredients</Text>
+          </h3>
+          <Text level="fine" as="p">
             AQUA, GLYCERIN, COCAMIDOPROPYL BETAINE, NIACINAMIDE, ALOE
             BARBADENSIS LEAF JUICE, CAFFEINE, ANANAS SATIVUS (PINEAPPLE) FRUIT
             EXTRACT, ALLANTOIN, SALIX NIGRA (WILLOW) BARK EXTRACT, PANTHENOL,
@@ -112,7 +114,9 @@ function Header() {
   return (
     <Container>
       <Box gridColumn={{initial: '1 / span 7'}}>
-        <Heading>Our Ingredients</Heading>
+        <h2>
+          <Text level="heading">Our Ingredients</Text>
+        </h2>
       </Box>
       <Box gridColumn={{initial: '8 / span 4'}}>
         <Text>
@@ -161,12 +165,14 @@ const AccordionTrigger = React.forwardRef(
         {...props}
         ref={forwardedRef}
       >
-        <Grid gap="4" columns="4">
+        <Grid gap="4" columns="4" pb="5" pt="2">
           <Box gridColumn="1 / 1">
-            <Text>{index}</Text>
+            <Text level="heading">{index}</Text>
           </Box>
           <Box gridColumn="2 / 4">
-            <Text wrap="nowrap">{children}</Text>
+            <Text level="heading" wrap="nowrap">
+              {children}
+            </Text>
           </Box>
         </Grid>
       </Accordion.Trigger>
@@ -187,9 +193,11 @@ const AccordionContent = React.forwardRef(
       {...props}
       ref={forwardedRef}
     >
-      <Text wrap="pretty" className="block">
-        {children}
-      </Text>
+      <Box pb="5">
+        <Text wrap="pretty" className="block">
+          {children}
+        </Text>
+      </Box>
     </Accordion.Content>
   ),
 );

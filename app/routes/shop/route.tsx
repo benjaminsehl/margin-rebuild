@@ -70,7 +70,6 @@ export default function Collection() {
           top="0"
           columns="2"
           gap="2"
-          maxWidth="83rem"
           width="100%"
           mx="auto"
           px="5"
