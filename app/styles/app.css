@@ -1,18 +1,18 @@
-@import "tailwindcss/base";
-@import "@radix-ui/themes/styles.css";
+@import 'tailwindcss/base';
+@import '@radix-ui/themes/styles.css';
 
 @font-face {
   font-family: 'ROM';
-  src: url('/src/assets/fonts/ROM-Regular.woff2') format('woff2');
-  font-weight: normal;
+  src: url('/fonts/ROM-Regular.woff2') format('woff2');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'ROM';
-  src: url('/src/assets/fonts/ROM-Light.woff2') format('woff2');
-  font-weight: normal;
+  src: url('/fonts/ROM-Light.woff2') format('woff2');
+  font-weight: 300;
   font-style: normal;
   font-display: swap;
   font-weight: 300;
@@ -20,7 +20,7 @@
 
 @font-face {
   font-family: 'ROM Mono';
-  src: url('/src/assets/fonts/ROMMono-Light.woff2') format('woff2');
+  src: url('/fonts/ROMMono-Light.woff2') format('woff2');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -28,7 +28,7 @@
 
 @font-face {
   font-family: 'ROM Mono';
-  src: url('/src/assets/fonts/ROMMono-Bold.woff2') format('woff2');
+  src: url('/fonts/ROMMono-Bold.woff2') format('woff2');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -36,15 +36,15 @@
 
 @font-face {
   font-family: 'Tomato';
-  src: url('/src/assets/fonts/Tomato-Regular.woff2') format('woff2');
-  font-weight: normal;
+  src: url('/fonts/Tomato-Regular.woff2') format('woff2');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'Tomato';
-  src: url('/src/assets/fonts/Tomato-Light.woff2') format('woff2');
+  src: url('/fonts/Tomato-Light.woff2') format('woff2');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -59,11 +59,15 @@
   --cart-aside-summary-height: 250px;
   --grid-item-width: 355px;
   --header-height: 64px;
-  --color-dark: #000;
-  --color-light: #fff;
+  --color-dark: #181806;
+  --color-light: #fdfcf1;
+  --color-text: 24, 24 6;
+  --color-bg: 253 252 241;
 }
 
-:root, .light, .light-theme {
+:root,
+.light,
+.light-theme {
   --gray-1: #f9f9f6;
   --gray-2: #f5f6ee;
   --gray-3: #ecede5;
@@ -90,19 +94,24 @@
   --gray-a11: #191a00b0;
   --gray-a12: #141401f1;
 
-  --gray-contrast: #FFFFFF;
+  --gray-contrast: #ffffff;
   --gray-surface: #ffffffcc;
   --gray-indicator: #888972;
   --gray-track: #888972;
 }
 
-:root, .light, .light-theme, .radix-themes {
+:root,
+.light,
+.light-theme,
+.radix-themes {
   --color-background: #fdfcf1;
 }
 
 @supports (color: color(display-p3 1 1 1)) {
   @media (color-gamut: p3) {
-    :root, .light, .light-theme {
+    :root,
+    .light,
+    .light-theme {
       --gray-1: oklch(98.1% 0.004 108.9);
       --gray-2: oklch(97% 0.01 108.9);
       --gray-3: oklch(94.2% 0.01 108.9);
@@ -129,7 +138,7 @@
       --gray-a11: color(display-p3 0.086 0.094 0 / 0.682);
       --gray-a12: color(display-p3 0.067 0.067 0 / 0.934);
 
-      --gray-contrast: #FFFFFF;
+      --gray-contrast: #ffffff;
       --gray-surface: color(display-p3 1 1 1 / 80%);
       --gray-indicator: oklch(62.2% 0.033 108.9);
       --gray-track: oklch(62.2% 0.033 108.9);
@@ -137,7 +146,9 @@
   }
 }
 
-:root, .light, .light-theme {
+:root,
+.light,
+.light-theme {
   --yellow-1: #f9f9f6;
   --yellow-2: #f5f6ee;
   --yellow-3: #ecede5;
@@ -172,7 +183,9 @@
 
 @supports (color: color(display-p3 1 1 1)) {
   @media (color-gamut: p3) {
-    :root, .light, .light-theme {
+    :root,
+    .light,
+    .light-theme {
       --yellow-1: oklch(98.1% 0.004 108.9);
       --yellow-2: oklch(97% 0.01 108.9);
       --yellow-3: oklch(94.2% 0.01 108.9);
@@ -207,11 +220,14 @@
   }
 }
 
-.dark, .dark-theme, :is(.dark, .dark-theme) :where(.radix-themes:not(.light, .light-theme)) {
+.dark,
+.dark-theme,
+:is(.dark, .dark-theme) :where(.radix-themes:not(.light, .light-theme)) {
   --color-background: #181806;
 }
 
-.dark, .dark-theme {
+.dark,
+.dark-theme {
   --gray-1: #181711;
   --gray-2: #1f1e18;
   --gray-3: #28271d;
@@ -238,7 +254,7 @@
   --gray-a11: #fefceeae;
   --gray-a12: #fefdf4ee;
 
-  --gray-contrast: #FFFFFF;
+  --gray-contrast: #ffffff;
   --gray-surface: rgba(0, 0, 0, 0.05);
   --gray-indicator: #6f6e60;
   --gray-track: #6f6e60;
@@ -246,7 +262,8 @@
 
 @supports (color: color(display-p3 1 1 1)) {
   @media (color-gamut: p3) {
-    .dark, .dark-theme {
+    .dark,
+    .dark-theme {
       --gray-1: oklch(20.4% 0.013 102.4);
       --gray-2: oklch(23.4% 0.012 102.4);
       --gray-3: oklch(26.9% 0.017 102.4);
@@ -273,7 +290,7 @@
       --gray-a11: color(display-p3 1 0.992 0.941 / 0.68);
       --gray-a12: color(display-p3 1 0.996 0.961 / 0.931);
 
-      --gray-contrast: #FFFFFF;
+      --gray-contrast: #ffffff;
       --gray-surface: color(display-p3 0 0 0 / 5%);
       --gray-indicator: oklch(53.5% 0.022 102.4);
       --gray-track: oklch(53.5% 0.022 102.4);
@@ -281,8 +298,8 @@
   }
 }
 
-
-.dark, .dark-theme {
+.dark,
+.dark-theme {
   --yellow-1: #181711;
   --yellow-2: #1f1e18;
   --yellow-3: #28271d;
@@ -317,7 +334,8 @@
 
 @supports (color: color(display-p3 1 1 1)) {
   @media (color-gamut: p3) {
-    .dark, .dark-theme {
+    .dark,
+    .dark-theme {
       --yellow-1: oklch(20.4% 0.013 102.4);
       --yellow-2: oklch(23.4% 0.012 102.4);
       --yellow-3: oklch(26.9% 0.017 102.4);
@@ -823,4 +841,134 @@ button.reset:hover:not(:has(> *)) {
 
 .account-logout {
   display: inline-block;
+}
+
+.shopify-pc__banner__dialog {
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  bottom: 1rem !important;
+  right: 1rem !important;
+  font-size: 1rem !important;
+}
+
+#shopify-pc__banner__body-title {
+  font-weight: 500 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.shopify-pc__banner__btns.shopify-pc__banner__btns-granular {
+  flex-direction: row-reverse !important;
+  gap: 0.5rem !important;
+}
+
+.shopify-pc__banner__body {
+  margin-bottom: 2rem !important;
+}
+
+.shopify-pc__banner__btn-accept {
+  background: var(--color-dark) !important;
+  color: var(--color-light) !important;
+  border: 1px solid var(--color-dark) !important;
+  padding: 0.5rem 1rem !important;
+  margin-left: 0.5rem !important;
+  order: 1 !important;
+}
+
+.shopify-pc__banner__btns button {
+  border-radius: 0 !important;
+  margin: 0 !important;
+}
+
+.shopify-pc__banner__btn-manage-prefs {
+  text-decoration: none !important;
+}
+
+.shopify-pc__banner__btn-manage-prefs span {
+  text-wrap: nowrap !important;
+  border-bottom: solid 1px rgba(24, 24, 6, 0.3) !important;
+}
+
+.shopify-pc__prefs__dialog {
+  border-radius: 0 !important;
+  h2,
+  h3,
+  label,
+  p,
+  button {
+    margin-bottom: 0 !important;
+    font-size: 1rem !important;
+  }
+
+  .shopify-pc__prefs__intro {
+    display: none !important;
+  }
+
+  .shopify-pc__prefs__option:first-child {
+    border-top: 0 !important;
+    padding-top: 2rem !important;
+    margin-top: 0;
+  }
+
+  p {
+    text-wrap: balance;
+  }
+
+  h2,
+  h3,
+  label {
+    font-weight: 500 !important;
+  }
+
+  button {
+    border-radius: 0 !important;
+  }
+
+  #shopify-pc__prefs__header-title {
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  .shopify-pc__prefs__header-actions {
+    gap: 1rem !important;
+    & > button {
+      margin-right: 0 !important;
+    }
+  }
+
+  header {
+    @media (max-width: 1200px) {
+      align-items: flex-start !important;
+
+      h2 {
+        text-align: left !important;
+        margin-bottom: 1rem !important;
+      }
+    }
+  }
+}
+
+.scrollFade::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0.5rem;
+  background: linear-gradient(to bottom, var(--color-background), transparent);
+}
+
+.scrollFade::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0.5rem;
+  background: linear-gradient(to top, var(--color-background), transparent);
 }

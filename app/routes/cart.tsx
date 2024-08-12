@@ -10,9 +10,7 @@ export const meta: MetaFunction = () => {
   return [{title: `Hydrogen | Cart`}];
 };
 
-export async function action({request, context}: ActionFunctionArgs) {
-  const {cart} = context;
-
+export async function action({request, context: {cart}}: ActionFunctionArgs) {
   const formData = await request.formData();
 
   const {action, inputs} = CartForm.getFormInput(formData);

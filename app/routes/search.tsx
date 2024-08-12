@@ -3,6 +3,8 @@ import {useLoaderData, type MetaFunction} from '@remix-run/react';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 
 import {SearchForm, SearchResults, NoSearchResults} from '~/components/Search';
+import {Container} from '~/components';
+import {Box} from '@radix-ui/themes';
 
 export const meta: MetaFunction = () => {
   return [{title: `Hydrogen | Search`}];
@@ -51,7 +53,7 @@ export default function SearchPage() {
   const {searchTerm, searchResults} = useLoaderData<typeof loader>();
 
   return (
-    <div className="search">
+    <Container columns="1" pt="9rem" fullScreen>
       <h1>Search</h1>
       <SearchForm searchTerm={searchTerm} />
       {!searchTerm || !searchResults.totalResults ? (
@@ -63,7 +65,7 @@ export default function SearchPage() {
         />
       )}
       <Analytics.SearchView data={{searchTerm, searchResults}} />
-    </div>
+    </Container>
   );
 }
 

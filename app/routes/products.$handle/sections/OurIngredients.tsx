@@ -1,12 +1,5 @@
-import {
-  AspectRatio,
-  Box,
-  Flex,
-  Grid,
-  Heading,
-  Section,
-  Text,
-} from '@radix-ui/themes';
+import {AspectRatio, Box, Grid, Section} from '@radix-ui/themes';
+import {Text, Heading} from '~/components/Text';
 import {Container} from '~/components';
 import * as Accordion from '@radix-ui/react-accordion';
 import React from 'react';
@@ -142,7 +135,7 @@ const AccordionItem = React.forwardRef(
       {...props}
       ref={forwardedRef}
     >
-      <Grid gap="4" columns="2" align="baseline">
+      <Grid gap="8" columns="2" align="baseline">
         {children}
       </Grid>
     </Accordion.Item>

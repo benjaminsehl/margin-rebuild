@@ -1,6 +1,8 @@
 import {forwardRef} from 'react';
 import {compose, cva} from './utils';
+import type {VariantProps} from 'cva';
 
+export type TypographyProps = VariantProps<typeof typography>;
 const typography = cva({
   base: ['max-w-prose'],
   variants: {
@@ -29,11 +31,9 @@ const typography = cva({
       balance: 'text-balance',
     },
     color: {
-      text: 'text-black/70',
-      black: 'text-black',
-      accent: 'text-accent',
-      white: 'text-white',
-      gray: 'text-gray',
+      heading: 'text-foreground',
+      text: 'text-foreground/90',
+      subtle: 'text-foreground/50',
     },
     truncate: {
       true: 'truncate',
@@ -50,11 +50,15 @@ const typography = cva({
       strike: 'strike', // Custom alternative to line-through
     },
     font: {
-      sans: 'font-sans',
-      serif: 'font-serif',
-      mono: 'font-mono',
-      text: 'font-text',
+      heading: 'font-heading',
       display: 'font-display',
+      body: 'font-body',
+      fine: 'font-fine',
+    },
+    size: {
+      fine: 'text-fine',
+      body: 'text-body',
+      heading: 'text-heading',
     },
     leading: {
       none: 'leading-none', // 1
@@ -72,50 +76,27 @@ const typography = cva({
   },
 });
 
-const text = cva({
-  variants: {
-    size: {
-      1: ['text-xs', 'leading-normal'], // 12/16 - 0.75rem
-      2: ['text-sm', 'leading-normal'], // 14/20 - 0.875rem
-      3: ['text-base', 'leading-normal'], // 16/24 - 1rem
-      4: ['text-lg', 'leading-normal'], // 18/28 - 1.125rem
-      5: ['text-xl', 'leading-normal'], // 20/28 - 1.25rem
-      6: ['text-2xl', 'leading-tight'], // 24/32 - 1.5rem
-      7: ['text-3xl', 'leading-tight'], // 30/36 - 1.875rem
-      8: ['text-4xl', 'leading-tight'], // 36/40 - 2.25rem
-      9: ['text-5xl', 'leading-tight'], // 48/48 - 3rem
-      xs: ['text-xs', 'leading-normal'], // 12/16 - 0.75rem
-      s: ['text-sm', 'leading-normal'], // 14/20 - 0.875rem
-      m: ['text-base', 'leading-normal'], // 16/24 - 1rem
-      l: ['text-lg', 'leading-normal'], // 18/28 - 1.125rem
-      xl: ['text-xl', 'leading-normal'], // 20/28 - 1.25rem
-      '2xl': ['text-2xl', 'laeding-normal'], // 24/32 - 1.5rem
-      '3xl': ['text-3xl', 'laeding-tight'], // 30/36 - 1.875rem
-      '4xl': ['text-4xl', 'laeding-tight'], // 36/40 - 2.25rem
-      '5xl': ['text-5xl', 'laeding-tight'], // 48/48 - 3rem
-      '6xl': ['text-6xl', 'laeding-tight'], // 60/60 - 3.75rem
-    },
-  },
-  defaultVariants: {
-    size: 'm',
-  },
-});
-
+export interface TextProps extends TypographyProps {
+  as?: React.ElementType;
+  children?: React.ReactNode;
+  className?: string;
+}
 export const Text = forwardRef(
   (
     {
       as: Component = 'span',
       children,
+      size = 'body',
       truncate = false,
       uppercase = false,
       leading = 'snug',
       color = 'text',
       className,
       ...props
-    },
+    }: TextProps,
     ref,
   ) => {
-    const styles = compose(typography, text);
+    const styles = compose(typography);
 
     return (
       <Component
@@ -125,9 +106,9 @@ export const Text = forwardRef(
           ...props,
           truncate,
           uppercase,
+          size,
           leading,
           color,
-          text,
           className,
         })}
         {...props}
@@ -137,36 +118,11 @@ export const Text = forwardRef(
     );
   },
 );
-
-const heading = cva({
-  base: ['tracking-tight'],
-  variants: {
-    size: {
-      1: ['text-base', 'leading-normal'], // 16 - 1rem
-      2: ['text-lg', 'leading-normal'], // 18 - 1.125rem
-      3: ['text-xl', 'leading-normal'], // 20 - 1.25rem
-      4: ['text-4xl', 'leading-tight'], // 36 - 2.25rem
-      5: ['text-5xl', 'leading-tight'], // 48 - 3rem
-      6: ['text-6xl', 'leading-none'], // 60 - 3.75rem
-      7: ['text-7xl', 'leading-none'], // 72 - 4.5rem
-      8: ['text-8xl', 'leading-none'], // 96 - 6rem
-      9: ['text-9xl', 'leading-none'], // 128 - 8rem
-      xs: ['text-base', 'leading-normal'], // 16 - 1rem
-      s: ['text-lg', 'leading-normal'], // 18 - 1.125rem
-      m: ['text-xl', 'leading-normal'], // 20 - 1.25rem
-      l: ['text-3xl', 'leading-tight'], // 30 - 1.875rem
-      xl: ['text-4xl', 'leading-tight'], // 36 - 2.25rem
-      '2xl': ['text-5xl', 'leading-none'], // 48 - 3rem
-      '3xl': ['text-6xl', 'leading-none'], // 60 - 3.75rem
-      '4xl': ['text-7xl', 'leading-none'], // 72 - 4.5rem
-      '5xl': ['text-8xl', 'leading-none'], // 96 - 6rem
-      '6xl': ['text-9xl', 'leading-none'], // 128 - 8rem
-    },
-  },
-  defaultVariants: {
-    size: '2xl',
-  },
-});
+export interface HeadingProps extends TypographyProps {
+  as?: React.ElementType;
+  children?: React.ReactNode;
+  className?: string;
+}
 
 export const Heading = forwardRef(
   (
@@ -174,9 +130,10 @@ export const Heading = forwardRef(
       as: Component = 'h2',
       children,
       truncate = false,
-      uppercase = false,
+      uppercase = true,
       leading = 'tight',
-      font = 'display',
+      font = 'heading',
+      size = 'heading',
       width,
       weight,
       align,
@@ -185,10 +142,10 @@ export const Heading = forwardRef(
       fontStyle,
       className,
       ...props
-    },
+    }: HeadingProps,
     ref,
   ) => {
-    const styles = compose(typography, heading);
+    const styles = compose(typography);
 
     return (
       <Component
@@ -200,6 +157,7 @@ export const Heading = forwardRef(
           leading,
           width,
           weight,
+          size,
           font,
           align,
           wrap,
@@ -226,6 +184,12 @@ const span = cva({
   },
 });
 
+export interface SpanProps extends TypographyProps {
+  as?: React.ElementType;
+  children?: React.ReactNode;
+  className?: string;
+  pill?: boolean;
+}
 export const Span = forwardRef(
   (
     {
@@ -236,7 +200,7 @@ export const Span = forwardRef(
       pill = false,
       className,
       ...props
-    },
+    }: SpanProps,
     ref,
   ) => {
     const styles = compose(span, typography);
@@ -259,6 +223,11 @@ export const Span = forwardRef(
   },
 );
 
+export interface EmProps extends TypographyProps {
+  as?: React.ElementType;
+  children?: React.ReactNode;
+  className?: string;
+}
 export const Em = forwardRef(
   (
     {
@@ -266,10 +235,10 @@ export const Em = forwardRef(
       children,
       truncate = false,
       uppercase = false,
-      style = 'italic',
+      fontStyle = 'italic',
       className,
       ...props
-    },
+    }: EmProps,
     ref,
   ) => {
     const styles = compose(typography);
@@ -280,7 +249,7 @@ export const Em = forwardRef(
         className={styles({
           ...props,
           truncate,
-          style,
+          fontStyle,
           uppercase,
           className,
         })}
@@ -292,6 +261,11 @@ export const Em = forwardRef(
   },
 );
 
+export interface StrongProps extends TypographyProps {
+  as?: React.ElementType;
+  children?: React.ReactNode;
+  className?: string;
+}
 export const Strong = forwardRef(
   (
     {
@@ -302,7 +276,7 @@ export const Strong = forwardRef(
       uppercase = false,
       className,
       ...props
-    },
+    }: StrongProps,
     ref,
   ) => {
     const styles = compose(typography);

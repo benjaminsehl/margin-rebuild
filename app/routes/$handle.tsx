@@ -56,12 +56,14 @@ export default function Page() {
   const {page} = useLoaderData<typeof loader>();
 
   return (
-    <Container columns="1" pt="8rem">
-      <header>
-        <h1>{page.title}</h1>
-      </header>
-      <main dangerouslySetInnerHTML={{__html: page.body}} />
-    </Container>
+    <>
+      <Container columns="1" pt="8rem" fullScreen>
+        <header>
+          <h1>{page.title}</h1>
+        </header>
+        <main className="prose" dangerouslySetInnerHTML={{__html: page.body}} />
+      </Container>
+    </>
   );
 }
 

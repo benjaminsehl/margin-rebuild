@@ -15,34 +15,27 @@ import React from 'react';
 import {Link as RemixLink, useLocation} from '@remix-run/react';
 import type {LinkProps} from '@remix-run/react';
 import {useLocale} from '~/contexts/LocaleContext';
-import {Text} from '@radix-ui/themes';
+import {Text} from '~/components/Text';
 
 /**
  * Props for the LocalizedLink component.
  * Extends Remix's LinkProps, but makes 'to' required and adds custom props.
  */
 interface LocalizedLinkProps extends Omit<LinkProps, 'to'> {
-  /**
-   * The destination path or URL for the link.
-   * For internal links, this can be a relative path.
-   * For external links, use a full URL.
-   */
   to: string;
-
-  /**
-   * If true, bypasses the automatic localization of the 'to' prop.
-   * Useful for links that should remain the same across all locales.
-   */
   ignoreLocale?: boolean;
-
-  /**
-   * If true, forces the link to be treated as an external link,
-   * regardless of the 'to' prop format.
-   */
   external?: boolean;
-
   children: React.ReactNode;
+  level?: 'heading' | 'body' | 'fine';
 }
+
+/**
+ * Strips the specified base URL from the given URL.
+ */
+const stripUrl = (url: string) => {
+  const baseUrl = 'https://checkout.margin.global/';
+  return url.replace(baseUrl, '');
+};
 
 /**
  * A localized and enhanced version of Remix's Link component.
@@ -67,6 +60,7 @@ interface LocalizedLinkProps extends Omit<LinkProps, 'to'> {
  */
 export default function Link({
   prefetch = 'viewport',
+  level,
   to,
   ignoreLocale = false,
   children,
@@ -74,7 +68,6 @@ export default function Link({
   ...rest
 }: LocalizedLinkProps) {
   const {locale} = useLocale();
-  const location = useLocation();
 
   /**
    * Determines if the link should be treated as external.
@@ -94,11 +87,14 @@ export default function Link({
    * Adds the current locale as a prefix to the path for non-English locales.
    */
   const localizedTo = React.useMemo(() => {
+    // Strip the specified base URL from the 'to' prop
+    const strippedTo = stripUrl(to);
+
     if (isExternal || ignoreLocale || locale.language === 'EN') {
-      return to;
+      return strippedTo;
     }
 
-    const [pathname, query] = to.split('?');
+    const [pathname, query] = strippedTo.split('?');
     const segments = pathname.split('/').filter(Boolean);
     const localizedPath = `/${locale.language.toLowerCase()}/${segments.join(
       '/',
@@ -109,15 +105,21 @@ export default function Link({
 
   if (isExternal) {
     return (
-      // eslint-disable-next-line jsx-a11y/anchor-has-content
-      <a href={localizedTo} rel="noopener noreferrer" target="_blank" {...rest}>
-        {children}
-      </a>
+      <Text level={level} asChild>
+        <a
+          href={localizedTo}
+          rel="noopener noreferrer"
+          target="_blank"
+          {...rest}
+        >
+          {children}
+        </a>
+      </Text>
     );
   }
 
   return (
-    <Text asChild>
+    <Text level={level} asChild>
       <RemixLink
         unstable_viewTransition
         prefetch={prefetch}

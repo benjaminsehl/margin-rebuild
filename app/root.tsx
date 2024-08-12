@@ -15,10 +15,13 @@ import favicon from '~/assets/favicon.svg';
 import '@radix-ui/themes/styles.css';
 import appStyles from '~/styles/app.css?url';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
-import {LocaleProvider, type I18nLocale} from '~/contexts/LocaleContext';
+import {LocaleProvider} from '~/contexts/LocaleContext';
 import {getLocaleFromRequest} from '~/lib/locale';
-import {Theme} from '@radix-ui/themes';
+import {Box, Theme} from '@radix-ui/themes';
+import {Text} from '~/components/Text';
 import {useRouteLayout} from './lib/layout';
+import {CartProvider, useCart} from './contexts/CartContext';
+import {Container} from './components';
 
 export type RootLoader = typeof loader;
 
@@ -101,7 +104,6 @@ async function loadCriticalData({storefront}: LoaderFunctionArgs['context']) {
 function loadDeferredData({
   storefront,
   customerAccount,
-  cart,
 }: LoaderFunctionArgs['context']) {
   return {
     footer: storefront
@@ -110,7 +112,6 @@ function loadDeferredData({
         variables: {footerMenuHandle: 'footer'},
       })
       .catch(console.error),
-    cart: cart.get(),
     isLoggedIn: customerAccount.isLoggedIn(),
   };
 }
@@ -119,6 +120,8 @@ export function Layout({children}: {children?: React.ReactNode}) {
   const nonce = useNonce();
   const data = useRouteLoaderData<RootLoader>('root');
   const Layout = useRouteLayout();
+
+  const cart = useCart();
 
   if (!data || !data.locale) {
     // Handle the case where data or locale is undefined
@@ -137,13 +140,15 @@ export function Layout({children}: {children?: React.ReactNode}) {
         {/* TODO: Dark Mode support https://www.mattstobbs.com/remix-dark-mode/ */}
         <Theme appearance="light" accentColor="yellow">
           <LocaleProvider initialLocale={data.locale}>
-            <Analytics.Provider
-              cart={data.cart}
-              shop={data.shop}
-              consent={data.consent}
-            >
-              <Layout {...data}>{children}</Layout>
-            </Analytics.Provider>
+            <CartProvider>
+              <Analytics.Provider
+                cart={cart || null}
+                shop={data.shop}
+                consent={data.consent}
+              >
+                <Layout {...data}>{children}</Layout>
+              </Analytics.Provider>
+            </CartProvider>
           </LocaleProvider>
         </Theme>
         <ScrollRestoration nonce={nonce} />
@@ -163,18 +168,15 @@ export function ErrorBoundary() {
     ? error?.data?.message ?? error.data
     : error instanceof Error
     ? error.message
-    : 'Unknown error';
-  const errorStatus = isRouteErrorResponse(error) ? error.status : 500;
+    : 'Something went wrong.';
 
   return (
-    <div className="route-error">
-      <h1>Oops</h1>
-      <h2>{errorStatus}</h2>
+    <Container columns="1" height="100svh">
       {errorMessage && (
-        <fieldset>
-          <pre>{errorMessage}</pre>
-        </fieldset>
+        <Box position="sticky" top="1rem" pt="8rem">
+          <Text>{errorMessage}</Text>
+        </Box>
       )}
-    </div>
+    </Container>
   );
 }

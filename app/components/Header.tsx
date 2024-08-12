@@ -1,11 +1,25 @@
 import Link from '@h2/Link';
+import {cx} from '@h2/utils';
+import * as HoverCard from '@radix-ui/react-hover-card';
 import {Button, Flex} from '@radix-ui/themes';
+import {useLocation} from '@remix-run/react';
 import {Container} from '~/components';
-import Brand from '~/components/new/Brand';
+import Brand from '~/components/Brand';
+import {useCart} from '~/contexts/CartContext';
 
 export function Header() {
+  const cart = useCart();
+  const {pathname} = useLocation();
+
+  const isHome = pathname === '/';
+
   return (
-    <div className="fixed flex w-full h-20 z-max">
+    <header
+      className={cx([
+        isHome && 'text-light',
+        'fixed flex items-center w-full h-20 z-max',
+      ])}
+    >
       <Container align="center">
         <Flex
           justify="between"
@@ -26,28 +40,95 @@ export function Header() {
         >
           <Flex asChild gap="4" align="center">
             <nav>
-              <Link to="/shop">Shop</Link>
+              <ShopLink />
               {/* <Link to="/editorial">Editorial</Link> */}
-              <Link to="/stockists">Stockists</Link>
-              <Link to="/about">About</Link>
+              <Link level="heading" to="/stockists">
+                Stockists
+              </Link>
+              <Link level="heading" to="/about">
+                About
+              </Link>
             </nav>
           </Flex>
           <Flex asChild gap="4" align="center">
             <nav>
-              <Link to="/search">Search</Link>
+              <Link prefetch="intent" level="heading" to="/search">
+                Search
+              </Link>
               <Flex asChild gap="2" align="center">
-                <Link to="/bag">
+                <Link prefetch="intent" level="heading" to="/bag">
                   Bag{' '}
-                  <Button size="1" color="gray" variant="soft">
-                    0
-                  </Button>
+                  {cart?.totalQuantity && (
+                    <Button size="1" color="gray" variant="soft">
+                      <span className={isHome ? 'text-light' : undefined}>
+                        {cart.totalQuantity}
+                      </span>
+                    </Button>
+                  )}
                 </Link>
               </Flex>
             </nav>
           </Flex>
         </Flex>
       </Container>
-    </div>
+    </header>
+  );
+}
+
+function ShopLink() {
+  return (
+    <HoverCard.Root>
+      <HoverCard.Trigger>
+        <Link level="heading" to="/shop">
+          Shop
+        </Link>
+      </HoverCard.Trigger>
+      <HoverCard.Portal>
+        <HoverCard.Content sideOffset={5}>
+          <div className="flex flex-col gap-[7px]">
+            <img
+              className="block h-[60px] w-[60px] rounded-full"
+              src="https://pbs.twimg.com/profile_images/1337055608613253126/r_eiMp2H_400x400.png"
+              alt="Radix UI"
+            />
+            <div className="flex flex-col gap-[15px]">
+              <div>
+                <div className="text-mauve12 m-0 text-[15px] font-medium leading-[1.5]">
+                  Radix
+                </div>
+                <div className="text-mauve10 m-0 text-[15px] leading-[1.5]">
+                  @radix_ui
+                </div>
+              </div>
+              <div className="text-mauve12 m-0 text-[15px] leading-[1.5]">
+                Components, icons, colors, and templates for building
+                high-quality, accessible UI. Free and open-source.
+              </div>
+              <div className="flex gap-[15px]">
+                <div className="flex gap-[5px]">
+                  <div className="text-mauve12 m-0 text-[15px] font-medium leading-[1.5]">
+                    0
+                  </div>{' '}
+                  <div className="text-mauve10 m-0 text-[15px] leading-[1.5]">
+                    Following
+                  </div>
+                </div>
+                <div className="flex gap-[5px]">
+                  <div className="text-mauve12 m-0 text-[15px] font-medium leading-[1.5]">
+                    2,900
+                  </div>{' '}
+                  <div className="text-mauve10 m-0 text-[15px] leading-[1.5]">
+                    Followers
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <HoverCard.Arrow />
+        </HoverCard.Content>
+      </HoverCard.Portal>
+    </HoverCard.Root>
   );
 }
 
