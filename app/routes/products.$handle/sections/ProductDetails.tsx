@@ -5,7 +5,7 @@ import {ProductForm} from '~/components/ProductForm';
 import * as Accordion from '@radix-ui/react-accordion';
 import type {loader} from '~/routes/products.$handle/route';
 import React from 'react';
-import {Text, Heading} from '@h2/Text';
+import {Text, Heading} from '~/components/Text';
 import {cx} from '@h2/utils';
 
 export default function ProductDetails() {
@@ -65,7 +65,9 @@ export default function ProductDetails() {
         <Accordion.Root type="single">
           {notes.map((note, index) => (
             <AccordionItem value={`item-${index + 1}`} key={note.id}>
-              <AccordionTrigger>{note.title}</AccordionTrigger>
+              <AccordionTrigger>
+                <Heading as="h3">{note.title}</Heading>
+              </AccordionTrigger>
               <AccordionContent>{note.description}</AccordionContent>
             </AccordionItem>
           ))}

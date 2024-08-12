@@ -142,7 +142,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
           <LocaleProvider initialLocale={data.locale}>
             <CartProvider>
               <Analytics.Provider
-                cart={cart || null}
+                cart={cart}
                 shop={data.shop}
                 consent={data.consent}
               >

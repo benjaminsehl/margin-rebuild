@@ -9,6 +9,7 @@ import {Suspense} from 'react';
 import {AddToCartButton} from '~/components/AddToCartButton';
 import {useAside} from '~/components/Aside';
 import type {loader} from '~/routes/products.$handle/route';
+import {Text} from './Text';
 
 export function ProductForm() {
   const {product, variants} = useLoaderData<typeof loader>();
@@ -28,7 +29,7 @@ export function ProductForm() {
               options={product.options.filter(
                 (option) => option.values.length > 1,
               )}
-              variants={variants}
+              variants={data?.product?.variants.nodes || []}
             >
               {({option}) => (
                 <ProductOptions key={option.name} option={option} />
@@ -55,7 +56,9 @@ export function ProductForm() {
             : []
         }
       >
-        {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
+        <Text>
+          {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
+        </Text>
       </AddToCartButton>
     </div>
   );

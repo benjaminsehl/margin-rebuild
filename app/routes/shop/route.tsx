@@ -1,18 +1,9 @@
 import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {useLoaderData, type MetaFunction} from '@remix-run/react';
-import {
-  Pagination,
-  getPaginationVariables,
-  Image,
-  Money,
-  Analytics,
-} from '@shopify/hydrogen';
-import type {ProductItemFragment} from 'storefrontapi.generated';
-import {useVariantUrl} from '~/lib/variants';
-import Link from '@h2/Link';
+import {Pagination, getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {Container} from '~/components';
 import {Box, Flex, Grid, ScrollArea} from '@radix-ui/themes';
-import {Text} from '~/components/Text';
+import ProductCard from '~/components/ProductCard';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
@@ -94,7 +85,7 @@ export default function Collection() {
               <Grid columns="3" height="calc(100vh - 5rem)">
                 {collection.products.nodes.map((product, index) => {
                   return (
-                    <ProductItem
+                    <ProductCard.Component
                       key={product.id}
                       product={product}
                       loading={index < 8 ? 'eager' : undefined}
@@ -120,7 +111,7 @@ export default function Collection() {
               <Grid columns="3">
                 {nodes.map((product, index) => {
                   return (
-                    <ProductItem
+                    <ProductCard.Component
                       key={product.id}
                       product={product}
                       loading={index < 8 ? 'eager' : undefined}
@@ -146,80 +137,10 @@ export default function Collection() {
     </>
   );
 }
-function ProductItem({
-  product,
-  loading,
-}: {
-  product: ProductItemFragment;
-  loading?: 'eager' | 'lazy';
-}) {
-  const variant = product.variants.nodes[0];
-  const variantUrl = useVariantUrl(product.handle, variant.selectedOptions);
-  return (
-    <Flex direction="column" gap="2" pb="5" asChild>
-      <Link
-        className="items-center text-center"
-        key={product.id}
-        to={variantUrl}
-      >
-        {product.featuredImage && (
-          <Image
-            alt={product.featuredImage.altText || product.title}
-            aspectRatio="4/5"
-            data={product.featuredImage}
-            loading={loading}
-            sizes="(min-width: 45em) 400px, 100vw"
-          />
-        )}
-        <Flex direction="column" gap="0">
-          <Text level="heading">{product.title}</Text>
-          <Text level="fine">
-            <Money data={product.priceRange.minVariantPrice} />
-          </Text>
-        </Flex>
-      </Link>
-    </Flex>
-  );
-}
-
-const PRODUCT_ITEM_FRAGMENT = `#graphql
-  fragment MoneyProductItem on MoneyV2 {
-    amount
-    currencyCode
-  }
-  fragment ProductItem on Product {
-    id
-    handle
-    title
-    featuredImage {
-      id
-      altText
-      url
-      width
-      height
-    }
-    priceRange {
-      minVariantPrice {
-        ...MoneyProductItem
-      }
-      maxVariantPrice {
-        ...MoneyProductItem
-      }
-    }
-    variants(first: 1) {
-      nodes {
-        selectedOptions {
-          name
-          value
-        }
-      }
-    }
-  }
-` as const;
 
 // NOTE: https://shopify.dev/docs/api/storefront/2022-04/objects/collection
 const COLLECTION_QUERY = `#graphql
-  ${PRODUCT_ITEM_FRAGMENT}
+  ${ProductCard.Fragment}
   query Collection(
     $handle: String!
     $country: CountryCode
@@ -241,7 +162,7 @@ const COLLECTION_QUERY = `#graphql
         after: $endCursor
       ) {
         nodes {
-          ...ProductItem
+          ...ProductCard
         }
         pageInfo {
           hasPreviousPage

@@ -40,7 +40,10 @@ export function Header() {
         >
           <Flex asChild gap="4" align="center">
             <nav>
-              <ShopLink />
+              {/* <ShopLink /> */}
+              <Link level="heading" to="/shop">
+                Shop
+              </Link>
               {/* <Link to="/editorial">Editorial</Link> */}
               <Link level="heading" to="/stockists">
                 Stockists
