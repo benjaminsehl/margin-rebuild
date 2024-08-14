@@ -1,6 +1,4 @@
 /** TODO:
- * - [ ] Add a comment explaining what this component does
- * - [ ] Add proper types
  * - [ ] Add a utility function for parsing `MenuItem` output, see Demo Store
  * - [ ] Add logic for handling localization properly
  * - [ ] Add logic for routing via "named routes", like <Link to={product} /> and it would take a `product.id`
@@ -10,9 +8,10 @@
  * - [ ] Should support routing within collections, like `/collections/all/products/product-name`, while keeping
  *       the canonical URL as `/products/product-name`
  * - [ ] Maybe not in this component, but adds support for preloading images in addition to data, see JP's PR
+ * - [ ] Improve types
  */
 import React from 'react';
-import {Link as RemixLink, useLocation} from '@remix-run/react';
+import {Link as RemixLink} from '@remix-run/react';
 import type {LinkProps} from '@remix-run/react';
 import {useLocale} from '~/contexts/LocaleContext';
 import {Text} from '~/components/Text';

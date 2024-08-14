@@ -24,7 +24,7 @@ export default function Hero() {
             </Text>
             <Text>Developed in LA, manufactured in Toronto.</Text>
             <Link prefetch="render" to="/shop">
-              <span className="inline pb-1 border-b border-background/25">
+              <span className="inline pb-px border-b border-background/25">
                 Shop now
               </span>
             </Link>

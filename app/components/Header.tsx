@@ -6,6 +6,10 @@ import {useLocation} from '@remix-run/react';
 import {Container} from '~/components';
 import Brand from '~/components/Brand';
 import {useCart} from '~/contexts/CartContext';
+import {useAside} from './Aside';
+import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
+import type {CartViewPayload} from '@shopify/hydrogen';
+import {useAnalytics} from '@shopify/hydrogen';
 
 export function Header() {
   const cart = useCart();
@@ -55,21 +59,8 @@ export function Header() {
           </Flex>
           <Flex asChild gap="4" align="center">
             <nav>
-              <Link prefetch="intent" level="heading" to="/search">
-                Search
-              </Link>
-              <Flex asChild gap="2" align="center">
-                <Link prefetch="intent" level="heading" to="/bag">
-                  Bag{' '}
-                  {cart?.totalQuantity && (
-                    <Button size="1" color="gray" variant="soft">
-                      <span className={isHome ? 'text-light' : undefined}>
-                        {cart.totalQuantity}
-                      </span>
-                    </Button>
-                  )}
-                </Link>
-              </Flex>
+              <SearchToggle />
+              <CartBadge />
             </nav>
           </Flex>
         </Flex>
@@ -139,15 +130,15 @@ function ShopLink() {
 // import {Await} from '@remix-run/react';
 // import Link from '@h2/Link';
 // import {type CartViewPayload, useAnalytics} from '@shopify/hydrogen';
-// import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
+
 // import {useAside} from '~/components/Aside';
 
-// interface HeaderProps {
-//   header: HeaderQuery;
-//   cart: Promise<CartApiQueryFragment | null>;
-//   isLoggedIn: Promise<boolean>;
-//   publicStoreDomain: string;
-// }
+interface HeaderProps {
+  header: HeaderQuery;
+  cart: Promise<CartApiQueryFragment | null>;
+  isLoggedIn: Promise<boolean>;
+  publicStoreDomain: string;
+}
 
 // export function Header({
 //   header,
@@ -281,17 +272,17 @@ function ShopLink() {
 //   );
 // };
 
-// Header.MobileMenuToggle = function HeaderMobileMenuToggle() {
-//   const {open} = useAside();
-//   return (
-//     <button
-//       className="header-menu-mobile-toggle reset"
-//       onClick={() => open('mobile')}
-//     >
-//       <h3>☰</h3>
-//     </button>
-//   );
-// };
+function HeaderMobileMenuToggle() {
+  const {open} = useAside();
+  return (
+    <button
+      className="header-menu-mobile-toggle reset"
+      onClick={() => open('mobile')}
+    >
+      <h3>=</h3>
+    </button>
+  );
+}
 
 // Header.AccountLink = function HeaderAccountLink({
 //   isLoggedIn,
@@ -309,45 +300,51 @@ function ShopLink() {
 //   );
 // };
 
-// Header.SearchToggle = function HeaderSearchToggle() {
-//   const {open} = useAside();
-//   return (
-//     <button className="reset" onClick={() => open('search')}>
-//       Search
-//     </button>
-//   );
-// };
+function SearchToggle() {
+  const {open} = useAside();
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    open('search');
+  };
+  return (
+    <Link prefetch="intent" level="heading" to="/search" onClick={handleClick}>
+      Search
+    </Link>
+  );
+}
 
-// Header.CartToggle = function HeaderCartToggle({
-//   cart,
-// }: Pick<HeaderProps, 'cart'>) {
-//   return (
-//     <Suspense fallback={<Header.CartBadge count={null} />}>
-//       <Await resolve={cart}>
-//         {(cart) => <Header.CartBadge count={cart?.totalQuantity || 0} />}
-//       </Await>
-//     </Suspense>
-//   );
-// };
+function CartBadge() {
+  const {open} = useAside();
+  const cartData = useCart();
+  const {publish, shop, cart, prevCart} = useAnalytics();
 
-// Header.CartBadge = function HeaderCartBadge({count}: {count: number | null}) {
-//   const {open} = useAside();
-//   const {publish, shop, cart, prevCart} = useAnalytics();
+  const {pathname} = useLocation();
 
-//   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-//     e.preventDefault();
-//     open('cart');
-//     publish('cart_viewed', {
-//       cart,
-//       prevCart,
-//       shop,
-//       url: window.location.href || '',
-//     } as CartViewPayload);
-//   };
+  const isHome = pathname === '/';
 
-//   return (
-//     <a href="/cart" onClick={handleClick}>
-//       Cart {count === null ? <span>&nbsp;</span> : count}
-//     </a>
-//   );
-// };
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    open('cart');
+    publish('cart_viewed', {
+      cart,
+      prevCart,
+      shop,
+      url: window.location.href || '',
+    } as CartViewPayload);
+  };
+
+  return (
+    <Flex asChild gap="2" align="center">
+      <Link prefetch="intent" level="heading" to="/bag" onClick={handleClick}>
+        Bag{' '}
+        {cartData?.totalQuantity && (
+          <Button size="1" color="gray" variant="soft">
+            <span className={isHome ? 'text-light' : undefined}>
+              {cartData.totalQuantity}
+            </span>
+          </Button>
+        )}
+      </Link>
+    </Flex>
+  );
+}

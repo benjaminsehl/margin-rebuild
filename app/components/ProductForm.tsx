@@ -66,29 +66,28 @@ export function ProductForm() {
 
 function ProductOptions({option}: {option: VariantOption}) {
   return (
-    <div className="product-options" key={option.name}>
-      <h5>{option.name}</h5>
-      <div className="product-options-grid">
+    <div className="flex flex-col gap-2" key={option.name}>
+      <Text asChild level="heading">
+        <h5>{option.name}</h5>
+      </Text>
+      <div className="flex gap-4">
         {option.values.map(({value, isAvailable, isActive, to}) => {
           return (
             <Link
-              className="product-options-item"
+              className={`border-b ${
+                isActive ? 'border-foreground/50' : 'border-transparent'
+              } ${isAvailable ? '' : 'opacity-30'}`}
               key={option.name + value}
               prefetch="intent"
               preventScrollReset
               replace
               to={to}
-              style={{
-                border: isActive ? '1px solid black' : '1px solid transparent',
-                opacity: isAvailable ? 1 : 0.3,
-              }}
             >
               {value}
             </Link>
           );
         })}
       </div>
-      <br />
     </div>
   );
 }

@@ -11,6 +11,10 @@ import type {ProductItemFragment} from 'storefrontapi.generated';
 import {useVariantUrl} from '~/lib/variants';
 import Link from '@h2/Link';
 import ProductCard from '~/components/ProductCard';
+import {Container} from '~/components';
+import {Text} from '~/components/Text';
+import {Product} from '@shopify/hydrogen/storefront-api-types';
+import {Flex, Grid} from '@radix-ui/themes';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
@@ -38,7 +42,7 @@ async function loadCriticalData({
   const {handle} = params;
   const {storefront} = context;
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8,
+    pageBy: 28,
   });
 
   if (!handle) {
@@ -76,9 +80,16 @@ export default function Collection() {
   const {collection} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
+    <Container columns="1" pt="8rem">
+      <Flex asChild align="center" justify="between">
+        <header>
+          <Text asChild level="heading">
+            <h1>{collection.title}</h1>
+          </Text>
+          <Text level="heading">{collection.products.nodes.length}</Text>
+        </header>
+      </Flex>
+      {collection.description && <Text as="p">{collection.description}</Text>}
       <Pagination connection={collection.products}>
         {({nodes, isLoading, PreviousLink, NextLink}) => (
           <>
@@ -101,13 +112,13 @@ export default function Collection() {
           },
         }}
       />
-    </div>
+    </Container>
   );
 }
 
-function ProductsGrid({products}: {products: ProductItemFragment[]}) {
+function ProductsGrid({products}: {products: Product[]}) {
   return (
-    <div className="products-grid">
+    <Grid columns="3">
       {products.map((product, index) => {
         return (
           <ProductCard.Component
@@ -117,7 +128,7 @@ function ProductsGrid({products}: {products: ProductItemFragment[]}) {
           />
         );
       })}
-    </div>
+    </Grid>
   );
 }
 

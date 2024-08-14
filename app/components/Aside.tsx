@@ -1,4 +1,5 @@
 import {createContext, type ReactNode, useContext, useState} from 'react';
+import {Text} from './Text';
 
 type AsideType = 'search' | 'cart' | 'mobile' | 'closed';
 type AsideContextValue = {
@@ -32,13 +33,15 @@ export function Aside({
   return (
     <div
       aria-modal
-      className={`overlay ${expanded ? 'expanded' : ''}`}
+      className={`overlay z-max ${expanded ? 'expanded' : ''}`}
       role="dialog"
     >
       <button className="close-outside" onClick={close} />
       <aside>
         <header>
-          <h3>{heading}</h3>
+          <Text asChild level="heading">
+            <h3>{heading}</h3>
+          </Text>
           <button className="close reset" onClick={close}>
             &times;
           </button>

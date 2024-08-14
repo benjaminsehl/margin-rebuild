@@ -4,6 +4,8 @@ import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {CartLineItem} from '~/components/CartLineItem';
 import {CartSummary} from './CartSummary';
+import {useCart} from '~/contexts/CartContext';
+import Container from './Container';
 
 export type CartLayout = 'page' | 'aside';
 
@@ -16,7 +18,8 @@ export type CartMainProps = {
  * The main cart component that displays the cart items and summary.
  * It is used by both the /cart route and the cart aside dialog.
  */
-export function CartMain({layout, cart: originalCart}: CartMainProps) {
+export function CartMain({layout}: CartMainProps) {
+  const originalCart = useCart();
   // The useOptimisticCart hook applies pending actions to the cart
   // so the user immediately sees feedback when they modify the cart.
   const cart = useOptimisticCart(originalCart);
@@ -29,19 +32,21 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   const cartHasItems = cart?.totalQuantity! > 0;
 
   return (
-    <div className={className}>
-      <CartEmpty hidden={linesCount} layout={layout} />
-      <div className="cart-details">
-        <div aria-labelledby="cart-lines">
-          <ul>
-            {(cart?.lines?.nodes ?? []).map((line: OptimisticCartLine) => (
-              <CartLineItem key={line.id} line={line} layout={layout} />
-            ))}
-          </ul>
+    <Container columns="1">
+      <div className={className}>
+        <CartEmpty hidden={linesCount} layout={layout} />
+        <div className="cart-details">
+          <div aria-labelledby="cart-lines">
+            <ul>
+              {(cart?.lines?.nodes ?? []).map((line: OptimisticCartLine) => (
+                <CartLineItem key={line.id} line={line} layout={layout} />
+              ))}
+            </ul>
+          </div>
+          {cartHasItems && <CartSummary cart={cart} layout={layout} />}
         </div>
-        {cartHasItems && <CartSummary cart={cart} layout={layout} />}
       </div>
-    </div>
+    </Container>
   );
 }
 

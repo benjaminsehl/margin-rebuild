@@ -64,7 +64,7 @@ export default function Collection() {
 
   return (
     <>
-      <Box width="100%">
+      {/* <Box width="100%">
         <Grid
           position="sticky"
           top="0"
@@ -91,7 +91,6 @@ export default function Collection() {
                     />
                   );
                 })}
-                {/* Fill array of 10 items and loop over them */}
                 {[...Array(100)].map((_, index) => (
                   <div key={index} />
                 ))}
@@ -99,7 +98,7 @@ export default function Collection() {
             </ScrollArea>
           </Box>
         </Grid>
-      </Box>
+      </Box> */}
       <Container fullScreen columns="1" pt="5rem">
         <Pagination connection={collection.products}>
           {({nodes, isLoading, PreviousLink, NextLink}) => (
