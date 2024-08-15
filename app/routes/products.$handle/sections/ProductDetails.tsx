@@ -36,9 +36,9 @@ export default function ProductDetails() {
     <Container align="center">
       <Box
         gridColumn={{initial: '1', sm: '1 / span 6'}}
-        width="calc(100% + var(--space-5))"
+        width={{initial: '100%', sm: 'calc(100% + var(--space-5))'}}
         height="100%"
-        mx="-3"
+        mx={{sm: '-3'}}
         overflow="hidden"
         className="rounded"
       >

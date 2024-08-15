@@ -18,8 +18,8 @@ export default function Container({
         maxWidth=""
         width="100%"
         mx="auto"
-        px="8"
-        py="4"
+        px={{initial: '4', sm: '8'}}
+        py={{initial: '9', sm: '4'}}
         className={className}
         {...props}
       >
