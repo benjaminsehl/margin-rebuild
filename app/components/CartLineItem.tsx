@@ -4,7 +4,8 @@ import {CartForm, Image, type OptimisticCartLine} from '@shopify/hydrogen';
 import {useVariantUrl} from '~/lib/variants';
 import Link from '@h2/Link';
 import {useAside} from './Aside';
-import {LineCost, LineCostCompareAt, Price, PriceCompareAt} from '@h2/Price';
+import {Text} from './Text';
+import {Button, Flex} from '@radix-ui/themes';
 
 /**
  * A single line item in the cart. It displays the product image, title, price.
@@ -23,7 +24,7 @@ export function CartLineItem({
   const {close} = useAside();
 
   return (
-    <li key={id} className="cart-line">
+    <li key={id} className="flex items-center w-full gap-4">
       {image && (
         <Image
           alt={title}
@@ -35,7 +36,7 @@ export function CartLineItem({
         />
       )}
 
-      <div>
+      <div className="flex flex-col justify-center w-full gap-3">
         <Link
           prefetch="intent"
           to={lineItemUrl}
@@ -45,22 +46,23 @@ export function CartLineItem({
             }
           }}
         >
-          <p>
-            <strong>{product.title}</strong>
-          </p>
+          <Text trim="both" asChild level="heading">
+            <h4>{product.title}</h4>
+          </Text>
         </Link>
         {/* <div>
           <LineCost variant={line} />
           <LineCostCompareAt variant={line} />
         </div> */}
         <ul>
-          {selectedOptions.map((option) => (
-            <li key={option.name}>
-              <small>
-                {option.name}: {option.value}
-              </small>
-            </li>
-          ))}
+          {selectedOptions.map(
+            (option) =>
+              option.value !== 'Default Title' && (
+                <Text trim="both" key={option.name} asChild>
+                  <li>{option.value}</li>
+                </Text>
+              ),
+          )}
         </ul>
         <CartLineQuantity line={line} />
       </div>
@@ -80,32 +82,38 @@ function CartLineQuantity({line}: {line: OptimisticCartLine}) {
   const nextQuantity = Number((quantity + 1).toFixed(0));
 
   return (
-    <div className="cart-line-quantity">
-      <small>Quantity: {quantity} &nbsp;&nbsp;</small>
-      <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
-        <button
-          aria-label="Decrease quantity"
-          disabled={quantity <= 1 || !!isOptimistic}
-          name="decrease-quantity"
-          value={prevQuantity}
-        >
-          <span>&#8722; </span>
-        </button>
-      </CartLineUpdateButton>
-      &nbsp;
-      <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
-        <button
-          aria-label="Increase quantity"
-          name="increase-quantity"
-          value={nextQuantity}
-          disabled={!!isOptimistic}
-        >
-          <span>&#43;</span>
-        </button>
-      </CartLineUpdateButton>
-      &nbsp;
+    <Flex align="baseline" gap="3" justify="between">
+      <Flex align="baseline" gap="3">
+        <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
+          <Button
+            size="1"
+            color="gray"
+            variant="soft"
+            aria-label="Decrease quantity"
+            disabled={quantity <= 1 || !!isOptimistic}
+            name="decrease-quantity"
+            value={prevQuantity}
+          >
+            <span>&#8722;</span>
+          </Button>
+        </CartLineUpdateButton>
+        <Text>{quantity}</Text>
+        <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
+          <Button
+            size="1"
+            color="gray"
+            variant="soft"
+            aria-label="Increase quantity"
+            name="increase-quantity"
+            value={nextQuantity}
+            disabled={!!isOptimistic}
+          >
+            <span>&#43;</span>
+          </Button>
+        </CartLineUpdateButton>
+      </Flex>
       <CartLineRemoveButton lineIds={[lineId]} disabled={!!isOptimistic} />
-    </div>
+    </Flex>
   );
 }
 
@@ -127,9 +135,17 @@ function CartLineRemoveButton({
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
-      <button disabled={disabled} type="submit">
-        Remove
-      </button>
+      <Text asChild level="heading">
+        <Button
+          size="1"
+          color="gray"
+          variant="soft"
+          disabled={disabled}
+          type="submit"
+        >
+          &times;
+        </Button>
+      </Text>
     </CartForm>
   );
 }

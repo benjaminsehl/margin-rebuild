@@ -1,30 +1,41 @@
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import type {CartLayout} from '~/components/CartMain';
 import {CartForm, Money, type OptimisticCart} from '@shopify/hydrogen';
+import {cx} from '@h2/utils';
+import {Text} from './Text';
+import {Button, TextField} from '@radix-ui/themes';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;
   layout: CartLayout;
+  className?: string;
 };
 
-export function CartSummary({cart, layout}: CartSummaryProps) {
-  const className =
-    layout === 'page' ? 'cart-summary-page' : 'cart-summary-aside';
-
+export function CartSummary({cart, layout, className}: CartSummaryProps) {
   return (
-    <div aria-labelledby="cart-summary" className={className}>
-      <h4>Totals</h4>
-      <dl className="cart-subtotal">
-        <dt>Subtotal</dt>
-        <dd>
-          {cart.cost?.subtotalAmount?.amount ? (
-            <Money data={cart.cost?.subtotalAmount} />
-          ) : (
-            '-'
-          )}
-        </dd>
+    <div
+      aria-labelledby="cart-summary"
+      className={cx(
+        layout !== 'page' &&
+          'w-full bg-background px-4 py-6 gap-4 grid border-t border-foreground/25 pt-4',
+        className,
+      )}
+    >
+      <dl className="flex justify-between">
+        <Text level="heading" asChild>
+          <dt>Subtotal</dt>
+        </Text>
+        <Text level="heading" asChild>
+          <dd>
+            {cart.cost?.subtotalAmount?.amount ? (
+              <Money data={cart.cost?.subtotalAmount} />
+            ) : (
+              '-'
+            )}
+          </dd>
+        </Text>
       </dl>
-      <CartDiscounts discountCodes={cart.discountCodes} />
+      {/* <CartDiscounts discountCodes={cart.discountCodes} /> */}
       <CartCheckoutActions checkoutUrl={cart.checkoutUrl} />
     </div>
   );
@@ -33,12 +44,15 @@ function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
   if (!checkoutUrl) return null;
 
   return (
-    <div>
-      <a href={checkoutUrl} target="_self">
-        <p>Continue to Checkout &rarr;</p>
+    <Text level="heading" asChild>
+      <a
+        className="flex items-center justify-center w-full py-3 rounded bg-foreground text-background"
+        href={checkoutUrl}
+        target="_self"
+      >
+        Continue to Checkout
       </a>
-      <br />
-    </div>
+    </Text>
   );
 }
 
@@ -70,10 +84,17 @@ function CartDiscounts({
 
       {/* Show an input to apply a discount */}
       <UpdateDiscountForm discountCodes={codes}>
-        <div>
-          <input type="text" name="discountCode" placeholder="Discount code" />
-          &nbsp;
-          <button type="submit">Apply</button>
+        <div className="flex gap-4">
+          <TextField.Root
+            className="w-full"
+            size="2"
+            type="text"
+            name="discountCode"
+            placeholder="Discount code"
+          />
+          <Button size="2" color="gray" variant="soft" type="submit">
+            Apply
+          </Button>
         </div>
       </UpdateDiscountForm>
     </div>

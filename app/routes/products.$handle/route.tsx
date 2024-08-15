@@ -199,6 +199,9 @@ const PRODUCT_FRAGMENT = `#graphql
     vendor
     handle
     descriptionHtml
+    subtitle: metafield(namespace:"descriptors", key:"subtitle"){
+      value
+    }
     options {
       name
       values

@@ -55,10 +55,6 @@
 
 :root {
   --aside-width: 400px;
-  --cart-aside-summary-height-with-discount: 300px;
-  --cart-aside-summary-height: 250px;
-  --grid-item-width: 355px;
-  --header-height: 64px;
   --color-dark: #181806;
   --color-light: #fdfcf1;
   --color-text: 24 24 6;
@@ -66,7 +62,7 @@
 }
 
 *::selection {
-  background-color: #DADCCF !important;
+  background-color: #dadccf !important;
 }
 
 :root,
@@ -375,12 +371,21 @@
 }
 
 @layer base {
+  button {
+    cursor: pointer !important;
+  }
 
-  .prose, .prose p {
+  .prose,
+  .prose p {
     @apply !text-body;
   }
 
-  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
     @apply font-heading text-heading uppercase;
   }
 }
@@ -391,61 +396,12 @@
 * --------------------------------------------------
 */
 aside {
-  background: var(--color-light);
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
-  height: 100vh;
   max-width: var(--aside-width);
   min-width: var(--aside-width);
   position: fixed;
   right: calc(-1 * var(--aside-width));
   top: 0;
   transition: transform 200ms ease-in-out;
-}
-
-aside header {
-  align-items: center;
-  border-bottom: 1px solid var(--color-dark);
-  display: flex;
-  height: var(--header-height);
-  justify-content: space-between;
-  padding: 0 20px;
-}
-
-aside header h3 {
-  margin: 0;
-}
-
-aside header .close {
-  font-weight: bold;
-  opacity: 0.8;
-  text-decoration: none;
-  transition: all 200ms;
-  width: 20px;
-}
-
-aside header .close:hover {
-  opacity: 1;
-}
-
-aside header h2 {
-  margin-bottom: 0.6rem;
-  margin-top: 0;
-}
-
-aside main {
-  margin: 1rem;
-}
-
-aside p {
-  margin: 0 0 0.25rem;
-}
-
-aside p:last-child {
-  margin: 0;
-}
-
-aside li {
-  margin-bottom: 0.125rem;
 }
 
 .overlay {
@@ -493,26 +449,6 @@ aside li {
 /* reveal aside */
 .overlay.expanded aside {
   transform: translateX(calc(var(--aside-width) * -1));
-}
-
-button.reset {
-  border: 0;
-  background: inherit;
-  font-size: inherit;
-}
-
-button.reset > * {
-  margin: 0;
-}
-
-button.reset:not(:has(> *)) {
-  height: 1.5rem;
-  line-height: 1.5rem;
-}
-
-button.reset:hover:not(:has(> *)) {
-  text-decoration: underline;
-  cursor: pointer;
 }
 
 /*
@@ -585,60 +521,6 @@ button.reset:hover:not(:has(> *)) {
   color: var(--color-light);
 }
 
-/*
-* --------------------------------------------------
-* components/Cart
-* --------------------------------------------------
-*/
-.cart-main {
-  height: 100%;
-  max-height: calc(100vh - var(--cart-aside-summary-height));
-  overflow-y: auto;
-  width: auto;
-}
-
-.cart-main.with-discount {
-  max-height: calc(100vh - var(--cart-aside-summary-height-with-discount));
-}
-
-.cart-line {
-  display: flex;
-  padding: 0.75rem 0;
-}
-
-.cart-line img {
-  height: 100%;
-  display: block;
-  margin-right: 0.75rem;
-}
-
-.cart-summary-page {
-  position: relative;
-}
-
-.cart-summary-aside {
-  background: white;
-  border-top: 1px solid var(--color-dark);
-  bottom: 0;
-  padding-top: 0.75rem;
-  position: absolute;
-  width: calc(var(--aside-width) - 40px);
-}
-
-.cart-line-quantity {
-  display: flex;
-}
-
-.cart-discount {
-  align-items: center;
-  display: flex;
-  margin-top: 0.25rem;
-}
-
-.cart-subtotal {
-  align-items: center;
-  display: flex;
-}
 /*
 * --------------------------------------------------
 * components/Search

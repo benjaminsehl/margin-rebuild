@@ -6,6 +6,7 @@ import {CartLineItem} from '~/components/CartLineItem';
 import {CartSummary} from './CartSummary';
 import {useCart} from '~/contexts/CartContext';
 import Container from './Container';
+import {Text} from './Text';
 
 export type CartLayout = 'page' | 'aside';
 
@@ -28,21 +29,26 @@ export function CartMain({layout}: CartMainProps) {
   const withDiscount =
     cart &&
     Boolean(cart?.discountCodes?.filter((code) => code.applicable)?.length);
-  const className = `cart-main ${withDiscount ? 'with-discount' : ''}`;
   const cartHasItems = cart?.totalQuantity! > 0;
 
   return (
-    <div className={className}>
-      <CartEmpty hidden={linesCount} layout={layout} />
-      <div aria-labelledby="cart-lines">
-        <ul>
-          {(cart?.lines?.nodes ?? []).map((line: OptimisticCartLine) => (
-            <CartLineItem key={line.id} line={line} layout={layout} />
-          ))}
-        </ul>
-      </div>
-      {cartHasItems && <CartSummary cart={cart} layout={layout} />}
-    </div>
+    <>
+      <main className="flex flex-col flex-1 p-4 overflow-y-auto">
+        <CartEmpty hidden={linesCount} layout={layout} />
+        <div aria-labelledby="cart-lines">
+          <ul className="grid gap-4">
+            {(cart?.lines?.nodes ?? []).map((line: OptimisticCartLine) => (
+              <CartLineItem key={line.id} line={line} layout={layout} />
+            ))}
+          </ul>
+        </div>
+      </main>
+      {cartHasItems && (
+        <footer className="flex-shrink-0">
+          <CartSummary cart={cart} layout={layout} />
+        </footer>
+      )}
+    </>
   );
 }
 
@@ -54,15 +60,18 @@ function CartEmpty({
 }) {
   const {close} = useAside();
   return (
-    <div hidden={hidden}>
-      <br />
-      <p>
+    <div className="flex flex-col items-start gap-4 pt-8" hidden={hidden}>
+      <Text as="p" className="max-w-sm text-balance">
         Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
         started!
-      </p>
-      <br />
-      <Link to="/collections" onClick={close} prefetch="viewport">
-        Continue shopping →
+      </Text>
+      <Link
+        to="/shop"
+        className="pb-1 border-b border-foreground/25"
+        onClick={close}
+        prefetch="viewport"
+      >
+        Continue shopping
       </Link>
     </div>
   );

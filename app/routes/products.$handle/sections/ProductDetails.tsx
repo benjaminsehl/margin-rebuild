@@ -59,9 +59,13 @@ export default function ProductDetails() {
         <Flex direction="column">
           <Flex align="baseline" justify="between">
             <h1>
-              <Text level="heading">{product.title}</Text>
+              <Text level="heading">{product.title}</Text>{' '}
             </h1>
-            <Text level="heading">&#9733; 5</Text>
+            {product?.subtitle?.value && (
+              <Text className="opacity-50" level="heading">
+                {product.subtitle.value}
+              </Text>
+            )}
           </Flex>
           <Text className="prose text-balance">
             <span dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />

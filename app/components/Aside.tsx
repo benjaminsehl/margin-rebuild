@@ -1,5 +1,6 @@
 import {createContext, type ReactNode, useContext, useState} from 'react';
 import {Text} from './Text';
+import {Button} from '@radix-ui/themes';
 
 type AsideType = 'search' | 'cart' | 'mobile' | 'closed';
 type AsideContextValue = {
@@ -37,16 +38,18 @@ export function Aside({
       role="dialog"
     >
       <button className="close-outside" onClick={close} />
-      <aside>
-        <header>
+      <aside className="flex flex-col w-full h-screen max-w-md shadow-xl bg-background">
+        <header className="flex justify-between flex-shrink-0 p-4 border-b border-foreground/25">
           <Text asChild level="heading">
             <h3>{heading}</h3>
           </Text>
-          <button className="close reset" onClick={close}>
-            &times;
-          </button>
+          <Text asChild level="heading">
+            <Button size="1" color="gray" variant="soft" onClick={close}>
+              &times;
+            </Button>
+          </Text>
         </header>
-        <main>{children}</main>
+        {children}
       </aside>
     </div>
   );
