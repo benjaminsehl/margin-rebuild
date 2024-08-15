@@ -19,10 +19,12 @@ export default function Hero() {
       <div className="absolute w-full bottom-[20vh]">
         <Container columns="1">
           <Flex className="text-background" direction="column" gap="2">
-            <Text>
+            <Text wrap="balance">
               Multifunctional skincare products built on active ingredients.
             </Text>
-            <Text>Developed in LA, manufactured in Toronto.</Text>
+            <Text wrap="balance">
+              Developed in LA, manufactured in Toronto.
+            </Text>
             <Link prefetch="render" to="/shop">
               <span className="inline pb-px border-b border-background/25">
                 Shop now

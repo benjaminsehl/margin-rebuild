@@ -63,76 +63,39 @@ export default function Collection() {
   const {collection} = useLoaderData<typeof loader>();
 
   return (
-    <>
-      {/* <Box width="100%">
-        <Grid
-          position="sticky"
-          top="0"
-          columns="2"
-          gap="2"
-          width="100%"
-          mx="auto"
-          px="5"
-          py="4"
-        >
-          <Box gridColumn="2" className="pt-12 bg-white">
-            <ScrollArea
-              type="scroll"
-              scrollbars="vertical"
-              className="h-screen"
-            >
-              <Grid columns="3" height="calc(100vh - 5rem)">
-                {collection.products.nodes.map((product, index) => {
-                  return (
-                    <ProductCard.Component
-                      key={product.id}
-                      product={product}
-                      loading={index < 8 ? 'eager' : undefined}
-                    />
-                  );
-                })}
-                {[...Array(100)].map((_, index) => (
-                  <div key={index} />
-                ))}
-              </Grid>
-            </ScrollArea>
-          </Box>
-        </Grid>
-      </Box> */}
-      <Container fullScreen columns="1" pt="5rem">
-        <Pagination connection={collection.products}>
-          {({nodes, isLoading, PreviousLink, NextLink}) => (
-            <>
-              <PreviousLink>
-                {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
-              </PreviousLink>
-              <Grid columns="3">
-                {nodes.map((product, index) => {
-                  return (
-                    <ProductCard.Component
-                      key={product.id}
-                      product={product}
-                      loading={index < 8 ? 'eager' : undefined}
-                    />
-                  );
-                })}
-              </Grid>
-              <NextLink>
-                {isLoading ? 'Loading...' : <span>Load more ↓</span>}
-              </NextLink>
-            </>
-          )}
-        </Pagination>
-        <Analytics.CollectionView
-          data={{
-            collection: {
-              id: collection.id,
-              handle: collection.handle,
-            },
-          }}
-        />
-      </Container>
-    </>
+    <Container fullScreen columns="1" pt="5rem">
+      <Pagination connection={collection.products}>
+        {({nodes, isLoading, PreviousLink, NextLink}) => (
+          <>
+            <PreviousLink>
+              {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
+            </PreviousLink>
+            <Grid columns={{initial: '1', xs: '2', md: '3'}}>
+              {nodes.map((product: any, index) => {
+                return (
+                  <ProductCard.Component
+                    key={product.id}
+                    product={product}
+                    loading={index < 8 ? 'eager' : undefined}
+                  />
+                );
+              })}
+            </Grid>
+            <NextLink>
+              {isLoading ? 'Loading...' : <span>Load more ↓</span>}
+            </NextLink>
+          </>
+        )}
+      </Pagination>
+      <Analytics.CollectionView
+        data={{
+          collection: {
+            id: collection.id,
+            handle: collection.handle,
+          },
+        }}
+      />
+    </Container>
   );
 }
 
@@ -172,3 +135,42 @@ const COLLECTION_QUERY = `#graphql
     }
   }
 ` as const;
+
+// eslint-disable-next-line no-lone-blocks
+{
+  /* <Box width="100%">
+        <Grid
+          position="sticky"
+          top="0"
+          columns="2"
+          gap="2"
+          width="100%"
+          mx="auto"
+          px="5"
+          py="4"
+        >
+          <Box gridColumn="2" className="pt-12 bg-white">
+            <ScrollArea
+              type="scroll"
+              scrollbars="vertical"
+              className="h-screen"
+            >
+              <Grid columns="3" height="calc(100vh - 5rem)">
+                {collection.products.nodes.map((product, index) => {
+                  return (
+                    <ProductCard.Component
+                      key={product.id}
+                      product={product}
+                      loading={index < 8 ? 'eager' : undefined}
+                    />
+                  );
+                })}
+                {[...Array(100)].map((_, index) => (
+                  <div key={index} />
+                ))}
+              </Grid>
+            </ScrollArea>
+          </Box>
+        </Grid>
+      </Box> */
+}

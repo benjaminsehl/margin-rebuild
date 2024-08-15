@@ -4,7 +4,7 @@ import {Container} from '~/components';
 import {Text} from '~/components/Text';
 import {parseMetaobjects} from '~/lib/utils';
 import Link from '@h2/Link';
-import {Box, Flex, Grid} from '@radix-ui/themes';
+import {Flex, Grid} from '@radix-ui/themes';
 
 export const meta: MetaFunction<typeof loader> = () => {
   return [{title: `Margin | Stockists`}];
@@ -61,9 +61,23 @@ export default function Page() {
         {stockistsByCountry.map((country) => (
           <Flex gap="8" direction="column" key={country.country}>
             <Text level="heading">{country.country}</Text>
-            <Grid columns="4">
+            <Grid
+              columns={{
+                initial: '1',
+                xs: '2',
+                sm: '3',
+                md: '4',
+                lg: '5',
+                xl: '6',
+              }}
+              gap={{initial: '4', md: '8'}}
+            >
               {country.stockists.map((stockist) => (
-                <Flex gap="2" direction="column" key={stockist.company}>
+                <Flex
+                  gap="2"
+                  direction="column"
+                  key={`${stockist.company}-${stockist.address}`}
+                >
                   {stockist.website ? (
                     <Link to={stockist.website}>{stockist.company}</Link>
                   ) : (

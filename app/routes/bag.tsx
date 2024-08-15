@@ -1,10 +1,15 @@
-import {Await, type MetaFunction, useRouteLoaderData} from '@remix-run/react';
-import {Suspense} from 'react';
+import {type MetaFunction} from '@remix-run/react';
 import type {CartQueryDataReturn} from '@shopify/hydrogen';
 import {CartForm} from '@shopify/hydrogen';
-import {json, type ActionFunctionArgs} from '@shopify/remix-oxygen';
+import {
+  json,
+  type LoaderFunctionArgs,
+  type ActionFunctionArgs,
+} from '@shopify/remix-oxygen';
+import {Container} from '~/components';
 import {CartMain} from '~/components/CartMain';
-import type {RootLoader} from '~/root';
+import {Text} from '~/components/Text';
+import {useCart} from '~/contexts/CartContext';
 
 export const meta: MetaFunction = () => {
   return [{title: `Hydrogen | Cart`}];
@@ -80,23 +85,21 @@ export async function action({request, context}: ActionFunctionArgs) {
   );
 }
 
-export default function Cart() {
-  const rootData = useRouteLoaderData<RootLoader>('root');
-  if (!rootData) return null;
+export async function loader({context}: LoaderFunctionArgs) {
+  const {cart} = context;
+  return json(await cart.get());
+}
+
+export default function Bag() {
+  const cart = useCart();
+  if (!cart) return null;
 
   return (
-    <div className="cart">
-      <h1>Cart</h1>
-      <Suspense fallback={<p>Loading cart ...</p>}>
-        <Await
-          resolve={rootData.cart}
-          errorElement={<div>An error occurred</div>}
-        >
-          {(cart) => {
-            return <CartMain layout="page" cart={cart} />;
-          }}
-        </Await>
-      </Suspense>
-    </div>
+    <Container columns="1" pt="9rem">
+      <Text asChild level="heading">
+        <h1>Bag</h1>
+      </Text>
+      <CartMain layout="page" cart={cart} />
+    </Container>
   );
 }

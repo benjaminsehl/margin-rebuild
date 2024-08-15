@@ -4,6 +4,27 @@ import * as remixBuild from 'virtual:remix/server-build';
 import {storefrontRedirect} from '@shopify/hydrogen';
 import {createRequestHandler} from '@shopify/remix-oxygen';
 import {createAppLoadContext} from '~/lib/context';
+import {redirects} from 'hydrogen.config';
+
+function handleRedirects(request: Request): Response | null {
+  const url = new URL(request.url);
+
+  for (const redirect of redirects) {
+    if (redirect.from === url.pathname) {
+      // Exact match
+      return Response.redirect(`${url.origin}${redirect.to}`, 301);
+    } else if (redirect.from.endsWith('*')) {
+      // Wildcard match
+      const prefix = redirect.from.slice(0, -1);
+      if (url.pathname.startsWith(prefix)) {
+        const newPath = url.pathname.replace(prefix, redirect.to.slice(0, -1));
+        return Response.redirect(`${url.origin}${newPath}`, 301);
+      }
+    }
+  }
+
+  return null; // No redirect found
+}
 
 /**
  * Export a fetch handler in module format.
@@ -17,6 +38,12 @@ export default {
     try {
       if (!env?.SESSION_SECRET) {
         throw new Error('SESSION_SECRET environment variable is not set');
+      }
+
+      // Check for redirects first
+      const redirectResponse = handleRedirects(request);
+      if (redirectResponse) {
+        return redirectResponse;
       }
 
       const appLoadContext = await createAppLoadContext(

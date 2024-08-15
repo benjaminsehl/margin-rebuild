@@ -89,7 +89,7 @@ function UpdateDiscountForm({
 }) {
   return (
     <CartForm
-      route="/cart"
+      route="/bag"
       action={CartForm.ACTIONS.DiscountCodesUpdate}
       inputs={{
         discountCodes: discountCodes || [],

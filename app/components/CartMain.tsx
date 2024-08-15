@@ -32,21 +32,17 @@ export function CartMain({layout}: CartMainProps) {
   const cartHasItems = cart?.totalQuantity! > 0;
 
   return (
-    <Container columns="1">
-      <div className={className}>
-        <CartEmpty hidden={linesCount} layout={layout} />
-        <div className="cart-details">
-          <div aria-labelledby="cart-lines">
-            <ul>
-              {(cart?.lines?.nodes ?? []).map((line: OptimisticCartLine) => (
-                <CartLineItem key={line.id} line={line} layout={layout} />
-              ))}
-            </ul>
-          </div>
-          {cartHasItems && <CartSummary cart={cart} layout={layout} />}
-        </div>
+    <div className={className}>
+      <CartEmpty hidden={linesCount} layout={layout} />
+      <div aria-labelledby="cart-lines">
+        <ul>
+          {(cart?.lines?.nodes ?? []).map((line: OptimisticCartLine) => (
+            <CartLineItem key={line.id} line={line} layout={layout} />
+          ))}
+        </ul>
       </div>
-    </Container>
+      {cartHasItems && <CartSummary cart={cart} layout={layout} />}
+    </div>
   );
 }
 

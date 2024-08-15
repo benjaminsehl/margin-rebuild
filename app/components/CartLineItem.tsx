@@ -123,7 +123,7 @@ function CartLineRemoveButton({
 }) {
   return (
     <CartForm
-      route="/cart"
+      route="/bag"
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
@@ -143,7 +143,7 @@ function CartLineUpdateButton({
 }) {
   return (
     <CartForm
-      route="/cart"
+      route="/bag"
       action={CartForm.ACTIONS.LinesUpdate}
       inputs={{lines}}
     >

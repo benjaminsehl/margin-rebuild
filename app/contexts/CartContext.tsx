@@ -10,7 +10,7 @@ export function CartProvider({children}: {children: React.ReactNode}) {
   useEffect(() => {
     if (fetcher.data || fetcher.state === 'loading') return;
 
-    fetcher.load('/cart');
+    fetcher.load('/bag');
   }, [fetcher]);
 
   return (
