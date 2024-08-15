@@ -34,7 +34,7 @@ export function CartMain({layout}: CartMainProps) {
   return (
     <>
       <main className="flex flex-col flex-1 p-4 overflow-y-auto">
-        <CartEmpty hidden={linesCount} layout={layout} />
+        {!linesCount && <CartEmpty />}
         <div aria-labelledby="cart-lines">
           <ul className="grid gap-4">
             {(cart?.lines?.nodes ?? []).map((line: OptimisticCartLine) => (
@@ -52,15 +52,10 @@ export function CartMain({layout}: CartMainProps) {
   );
 }
 
-function CartEmpty({
-  hidden = false,
-}: {
-  hidden: boolean;
-  layout?: CartMainProps['layout'];
-}) {
+function CartEmpty() {
   const {close} = useAside();
   return (
-    <div className="flex flex-col items-start gap-4 pt-8" hidden={hidden}>
+    <div className="flex flex-col items-start gap-4 pt-8">
       <Text as="p" className="max-w-sm text-balance">
         Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
         started!
