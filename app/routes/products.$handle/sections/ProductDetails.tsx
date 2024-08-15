@@ -59,10 +59,10 @@ export default function ProductDetails() {
         <Flex direction="column">
           <Flex align="baseline" justify="between">
             <h1>
-              <Text level="heading">{product.title}</Text>{' '}
+              <Text variant="heading">{product.title}</Text>{' '}
             </h1>
             {product?.subtitle?.value && (
-              <Text className="opacity-50" level="heading">
+              <Text className="opacity-50" variant="heading">
                 {product.subtitle.value}
               </Text>
             )}
@@ -128,7 +128,7 @@ const AccordionTrigger = React.forwardRef(
           ref={forwardedRef}
         >
           <Flex align="center" justify="between">
-            <Text level="heading" trim="both" wrap="nowrap">
+            <Text variant="heading" trim="both" wrap="nowrap">
               {children}
             </Text>
             <Text

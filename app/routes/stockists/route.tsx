@@ -58,9 +58,10 @@ export default function Page() {
   return (
     <>
       <Container columns="1" pt="8rem" fullScreen>
+        <h1 className="sr-only">Stockists</h1>
         {stockistsByCountry.map((country) => (
           <Flex gap="8" direction="column" key={country.country}>
-            <Text level="heading">{country.country}</Text>
+            <Text variant="heading">{country.country}</Text>
             <Grid
               pb="8"
               gap={{initial: '4', sm: '8'}}
@@ -87,9 +88,7 @@ export default function Page() {
                   {stockist.map ? (
                     <Link to={stockist.map}>
                       <Flex direction="column">
-                        <Text className="whitespace-pre-wrap">
-                          {stockist.address}
-                        </Text>
+                        <Text className="text-balance">{stockist.address}</Text>
                         <Text>
                           {stockist.city}, {stockist.country}
                         </Text>
@@ -97,9 +96,7 @@ export default function Page() {
                     </Link>
                   ) : (
                     <Flex direction="column">
-                      <Text className="whitespace-pre-wrap">
-                        {stockist.address}
-                      </Text>
+                      <Text className="text-balance">{stockist.address}</Text>
                       <Text>
                         {stockist.city}, {stockist.country}
                       </Text>

@@ -17,6 +17,8 @@ import type {
 } from 'storefrontapi.generated';
 
 import type {PredictiveSearchAPILoader} from '../routes/api.predictive-search';
+import {Button, Flex, Grid} from '@radix-ui/themes';
+import {Text} from './Text';
 
 type PredicticeSearchResultItemImage =
   | PredictiveCollectionFragment['image']
@@ -90,16 +92,18 @@ export function SearchForm({searchTerm}: {searchTerm: string}) {
   }, []);
 
   return (
-    <Form method="get">
+    <Form method="get" className="flex items-baseline gap-4">
       <input
         defaultValue={searchTerm}
         name="q"
         placeholder="Search…"
         ref={inputRef}
-        type="search"
+        className="w-full bg-transparent border-b focus:border-foreground focus:outline-none border-foreground/25"
       />
       &nbsp;
-      <button type="submit">Search</button>
+      <Button color="gray" variant="soft" type="submit">
+        Search
+      </Button>
     </Form>
   );
 }
@@ -115,7 +119,7 @@ export function SearchResults({
   }
   const keys = Object.keys(results) as Array<keyof typeof results>;
   return (
-    <div>
+    <div className="grid gap-8">
       {results &&
         keys.map((type) => {
           const resourceResults = results[type];
@@ -159,8 +163,10 @@ function SearchResultsProductsGrid({
   searchTerm,
 }: Pick<SearchQuery, 'products'> & {searchTerm: string}) {
   return (
-    <div className="search-result">
-      <h2>Products</h2>
+    <div className="grid gap-4">
+      <Text variant="heading">
+        <h2>Products</h2>
+      </Text>
       <Pagination connection={products}>
         {({nodes, isLoading, NextLink, PreviousLink}) => {
           const ItemsMarkup = nodes.map((product) => {
@@ -170,23 +176,31 @@ function SearchResultsProductsGrid({
             );
 
             return (
-              <div className="search-results-item" key={product.id}>
+              <div className="mb-4" key={product.id}>
                 <Link
+                  className="flex items-center gap-4"
                   prefetch="intent"
                   to={`/products/${product.handle}${trackingParams}`}
                 >
                   {product.variants.nodes[0].image && (
                     <Image
+                      className="rounded-sm"
                       data={product.variants.nodes[0].image}
                       alt={product.title}
-                      width={50}
+                      width={100}
+                      aspectRatio="1/1"
                     />
                   )}
-                  <div>
-                    <p>{product.title}</p>
-                    <small>
-                      <Money data={product.variants.nodes[0].price} />
-                    </small>
+                  <div className="flex flex-col gap-2">
+                    <Text variant="heading">
+                      <h4>{product.title}</h4>
+                    </Text>
+                    <Text variant="fine">
+                      <Money
+                        withoutTrailingZeros
+                        data={product.variants.nodes[0].price}
+                      />
+                    </Text>
                   </div>
                 </Link>
               </div>
@@ -196,65 +210,63 @@ function SearchResultsProductsGrid({
             <div>
               <div>
                 <PreviousLink>
-                  {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
+                  {isLoading ? 'Loading...' : <Text>Load previous</Text>}
                 </PreviousLink>
               </div>
-              <div>
-                {ItemsMarkup}
-                <br />
-              </div>
+              <div>{ItemsMarkup}</div>
               <div>
                 <NextLink>
-                  {isLoading ? 'Loading...' : <span>Load more ↓</span>}
+                  {isLoading ? 'Loading...' : <Text>Load more</Text>}
                 </NextLink>
               </div>
             </div>
           );
         }}
       </Pagination>
-      <br />
     </div>
   );
 }
 
 function SearchResultPageGrid({pages}: Pick<SearchQuery, 'pages'>) {
   return (
-    <div className="search-result">
-      <h2>Pages</h2>
-      <div>
+    <div className="grid gap-4">
+      <Text variant="heading" asChild>
+        <h2>Pages</h2>
+      </Text>
+      <div className="grid gap-4">
         {pages?.nodes?.map((page) => (
-          <div className="search-results-item" key={page.id}>
-            <Link prefetch="intent" to={`/pages/${page.handle}`}>
-              {page.title}
-            </Link>
-          </div>
+          <Link key={page.id} prefetch="intent" to={`/${page.handle}`}>
+            {page.title}
+          </Link>
         ))}
       </div>
-      <br />
     </div>
   );
 }
 
 function SearchResultArticleGrid({articles}: Pick<SearchQuery, 'articles'>) {
   return (
-    <div className="search-result">
-      <h2>Articles</h2>
-      <div>
+    <div className="grid gap-4">
+      <Text variant="heading" asChild>
+        <h2>Articles</h2>
+      </Text>
+      <div className="grid gap-4">
         {articles?.nodes?.map((article) => (
-          <div className="search-results-item" key={article.id}>
-            <Link prefetch="intent" to={`/blogs/${article.handle}`}>
-              {article.title}
-            </Link>
-          </div>
+          <Link
+            key={article.id}
+            prefetch="intent"
+            to={`/blogs/${article.handle}`}
+          >
+            {article.title}
+          </Link>
         ))}
       </div>
-      <br />
     </div>
   );
 }
 
 export function NoSearchResults() {
-  return <p>No results, try a different search.</p>;
+  return <Text>No results, try a different search.</Text>;
 }
 
 type ChildrenRenderProps = {
@@ -276,7 +288,7 @@ type SearchFromProps = {
 export function PredictiveSearchForm({
   action,
   children,
-  className = 'predictive-search-form',
+  className,
   ...props
 }: SearchFromProps) {
   const params = useParams();
@@ -335,7 +347,11 @@ export function PredictiveSearchResults() {
   }
 
   if (state === 'loading') {
-    return <div>Loading...</div>;
+    return (
+      <div className="py-4">
+        <Text>Loading...</Text>
+      </div>
+    );
   }
 
   if (!totalResults) {
@@ -343,8 +359,8 @@ export function PredictiveSearchResults() {
   }
 
   return (
-    <div className="predictive-search-results">
-      <div>
+    <div className="py-4">
+      <div className="grid gap-4">
         {results.map(({type, items}) => (
           <PredictiveSearchResult
             goToSearchResult={goToSearchResult}
@@ -357,10 +373,10 @@ export function PredictiveSearchResults() {
       </div>
       {searchTerm.current && (
         <Link onClick={goToSearchResult} to={`/search?q=${searchTerm.current}`}>
-          <p>
+          <Text>
             View all results for <q>{searchTerm.current}</q>
             &nbsp; →
-          </p>
+          </Text>
         </Link>
       )}
     </div>
@@ -376,9 +392,11 @@ function NoPredictiveSearchResults({
     return null;
   }
   return (
-    <p>
-      No results found for <q>{searchTerm.current}</q>
-    </p>
+    <div className="pt-4">
+      <Text>
+        No results found for <q>{searchTerm.current}</q>
+      </Text>
+    </div>
   );
 }
 
@@ -400,12 +418,21 @@ function PredictiveSearchResult({
     searchTerm.current
   }&type=${pluralToSingularSearchType(type)}`;
 
+  if (type === 'collections') {
+    return null;
+  }
+
   return (
-    <div className="predictive-search-result" key={type}>
+    <div
+      className="grid gap-4 pb-4 mb-4 border-b border-foreground/25"
+      key={type}
+    >
       <Link prefetch="intent" to={categoryUrl} onClick={goToSearchResult}>
-        <h5>{isSuggestions ? 'Suggestions' : type}</h5>
+        <Text variant="heading">
+          <h5>{isSuggestions ? 'Suggestions' : type}</h5>
+        </Text>
       </Link>
-      <ul>
+      <ul className="grid gap-4">
         {items.map((item: NormalizedPredictiveSearchResultItem) => (
           <SearchResultItem
             goToSearchResult={goToSearchResult}
@@ -424,16 +451,12 @@ type SearchResultItemProps = Pick<SearchResultTypeProps, 'goToSearchResult'> & {
 
 function SearchResultItem({goToSearchResult, item}: SearchResultItemProps) {
   return (
-    <li className="predictive-search-result-item" key={item.id}>
-      <Link onClick={goToSearchResult} to={item.url}>
-        {item.image?.url && (
-          <Image
-            alt={item.image.altText ?? ''}
-            src={item.image.url}
-            width={50}
-            height={50}
-          />
-        )}
+    <li className="w-full" key={item.id}>
+      <Link
+        className="flex items-center justify-between gap-4"
+        onClick={goToSearchResult}
+        to={item.url}
+      >
         <div>
           {item.styledTitle ? (
             <div
@@ -442,14 +465,23 @@ function SearchResultItem({goToSearchResult, item}: SearchResultItemProps) {
               }}
             />
           ) : (
-            <span>{item.title}</span>
+            <Text>{item.title}</Text>
           )}
           {item?.price && (
-            <small>
+            <Text variant="fine">
               <Money data={item.price} />
-            </small>
+            </Text>
           )}
         </div>
+        {item.image?.url && (
+          <Image
+            alt={item.image.altText ?? ''}
+            src={item.image.url}
+            width={50}
+            height={50}
+            className="rounded"
+          />
+        )}
       </Link>
     </li>
   );

@@ -69,7 +69,7 @@ export default function OurIngredients() {
               position="relative"
             >
               <Box asChild pb="2" display={{sm: 'none'}}>
-                <Text level="heading">{index + 1}</Text>
+                <Text variant="heading">{index + 1}</Text>
               </Box>
               <AspectRatio ratio={1 / 1}>
                 <img
@@ -102,9 +102,9 @@ export default function OurIngredients() {
       <Container>
         <Box gridColumn={{sm: '8 / span 4'}}>
           <h3>
-            <Text level="fine">Full Ingredients</Text>
+            <Text variant="fine">Full Ingredients</Text>
           </h3>
-          <Text level="fine" as="p">
+          <Text variant="fine" as="p">
             Aqua, Glycerin, Cocamidopropyl Betaine, Niacinamide, Aloe
             Barbadensis Leaf Juice, Caffeine, Ananas Sativus (Pineapple) Fruit
             Extract, Allantoin, Salix Nigra (Willow) Bark Extract, Panthenol,
@@ -123,7 +123,7 @@ function Header() {
     <Container py={{initial: '0'}}>
       <Box gridColumn={{sm: '1 / span 7'}}>
         <h2>
-          <Text level="heading">Our Ingredients</Text>
+          <Text variant="heading">Our Ingredients</Text>
         </h2>
       </Box>
       <Box gridColumn={{sm: '8 / span 4'}}>
@@ -179,10 +179,10 @@ const AccordionTrigger = React.forwardRef(
       >
         <Grid gap="4" columns="4" pb="5" pt="2">
           <Box gridColumn="1 / 1">
-            <Text level="heading">{index}</Text>
+            <Text variant="heading">{index}</Text>
           </Box>
           <Box gridColumn="2 / 4">
-            <Text level="heading" wrap="nowrap">
+            <Text variant="heading" wrap="nowrap">
               {children}
             </Text>
           </Box>

@@ -22,10 +22,10 @@ export function CartSummary({cart, layout, className}: CartSummaryProps) {
       )}
     >
       <dl className="flex justify-between">
-        <Text level="heading" asChild>
+        <Text variant="heading" asChild>
           <dt>Subtotal</dt>
         </Text>
-        <Text level="heading" asChild>
+        <Text variant="heading" asChild>
           <dd>
             {cart.cost?.subtotalAmount?.amount ? (
               <Money data={cart.cost?.subtotalAmount} />
@@ -44,7 +44,7 @@ function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
   if (!checkoutUrl) return null;
 
   return (
-    <Text level="heading" asChild>
+    <Text variant="heading" asChild>
       <a
         className="flex items-center justify-center w-full py-3 rounded bg-foreground text-background"
         href={checkoutUrl}

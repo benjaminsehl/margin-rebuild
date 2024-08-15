@@ -46,7 +46,7 @@ export function CartLineItem({
             }
           }}
         >
-          <Text trim="both" asChild level="heading">
+          <Text trim="both" asChild variant="heading">
             <h4>{product.title}</h4>
           </Text>
         </Link>
@@ -135,7 +135,7 @@ function CartLineRemoveButton({
       action={CartForm.ACTIONS.LinesRemove}
       inputs={{lineIds}}
     >
-      <Text asChild level="heading">
+      <Text asChild variant="heading">
         <Button
           size="1"
           color="gray"

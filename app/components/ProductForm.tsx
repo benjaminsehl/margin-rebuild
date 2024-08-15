@@ -70,7 +70,7 @@ export function ProductForm() {
 function ProductOptions({option}: {option: VariantOption}) {
   return (
     <div className="flex items-baseline gap-4" key={option.name}>
-      <Text asChild level="fine">
+      <Text asChild variant="fine">
         <h5>{option.name}</h5>
       </Text>
       <div className="flex gap-4">

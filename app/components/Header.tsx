@@ -51,14 +51,14 @@ export function Header() {
           <Flex asChild gap="4" align="center">
             <nav>
               {/* <ShopLink /> */}
-              <Link level="heading" to="/shop">
+              <Link variant="heading" to="/shop">
                 Shop
               </Link>
               {/* <Link to="/editorial">Editorial</Link> */}
-              <Link level="heading" to="/stockists">
+              <Link variant="heading" to="/stockists">
                 Stockists
               </Link>
-              <Link level="heading" to="/about">
+              <Link variant="heading" to="/about">
                 About
               </Link>
             </nav>
@@ -79,7 +79,7 @@ export function Header() {
 //   return (
 //     <HoverCard.Root>
 //       <HoverCard.Trigger>
-//         <Link level="heading" to="/shop">
+//         <Link variant="heading" to="/shop">
 //           Shop
 //         </Link>
 //       </HoverCard.Trigger>
@@ -313,7 +313,7 @@ function SearchToggle() {
     open('search');
   };
   return (
-    <Link prefetch="intent" level="heading" to="/search" onClick={handleClick}>
+    <Link prefetch="intent" variant="heading" to="/search" onClick={handleClick}>
       Search
     </Link>
   );
@@ -341,7 +341,7 @@ function CartBadge() {
 
   return (
     <Flex asChild gap="2" align="center">
-      <Link prefetch="intent" level="heading" to="/bag" onClick={handleClick}>
+      <Link prefetch="intent" variant="heading" to="/bag" onClick={handleClick}>
         Bag{' '}
         {cartData?.totalQuantity && (
           <Button size="1" color="gray" variant="soft">

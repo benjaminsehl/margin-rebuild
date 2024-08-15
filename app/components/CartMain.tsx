@@ -5,7 +5,6 @@ import {useAside} from '~/components/Aside';
 import {CartLineItem} from '~/components/CartLineItem';
 import {CartSummary} from './CartSummary';
 import {useCart} from '~/contexts/CartContext';
-import Container from './Container';
 import {Text} from './Text';
 
 export type CartLayout = 'page' | 'aside';

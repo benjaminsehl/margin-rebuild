@@ -26,7 +26,7 @@ interface LocalizedLinkProps extends Omit<LinkProps, 'to'> {
   ignoreLocale?: boolean;
   external?: boolean;
   children: React.ReactNode;
-  level?: 'heading' | 'body' | 'fine';
+  variant?: 'heading' | 'body' | 'fine';
 }
 
 /**
@@ -79,7 +79,7 @@ const stripUrl = (url: string) => {
  */
 export default function Link({
   prefetch = 'viewport',
-  level,
+  variant,
   to,
   ignoreLocale = false,
   children,
@@ -128,7 +128,7 @@ export default function Link({
 
   if (isExternal) {
     return (
-      <Text level={level} asChild>
+      <Text variant={variant} asChild>
         <a
           href={localizedTo}
           rel="noopener noreferrer"
@@ -142,7 +142,7 @@ export default function Link({
   }
 
   return (
-    <Text level={level} asChild>
+    <Text variant={variant} asChild>
       <RemixLink
         unstable_viewTransition
         prefetch={prefetch}

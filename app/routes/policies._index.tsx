@@ -27,7 +27,7 @@ export default function Policies() {
 
   return (
     <Container columns="1" pt="8rem" fullScreen>
-      <Text level="heading" asChild>
+      <Text variant="heading" asChild>
         <h1>Policies</h1>
       </Text>
       <div className="grid gap-2">

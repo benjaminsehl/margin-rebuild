@@ -96,7 +96,7 @@ export default function Bag() {
 
   return (
     <Container columns="1" pt="9rem">
-      <Text asChild level="heading">
+      <Text asChild variant="heading">
         <h1>Bag</h1>
       </Text>
       <CartMain layout="page" cart={cart} />

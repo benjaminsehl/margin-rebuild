@@ -53,7 +53,7 @@ function FooterMenu({
               return item?.url ? (
                 <Box key={item.id} gridColumn="span 3">
                   <Link
-                    level="fine"
+                    variant="fine"
                     className="whitespace-nowrap"
                     to={item.url}
                   >

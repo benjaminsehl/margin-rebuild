@@ -13,6 +13,7 @@ import {
   PredictiveSearchForm,
   PredictiveSearchResults,
 } from '~/components/Search';
+import {MagnifyingGlassIcon} from '@radix-ui/react-icons';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -74,16 +75,16 @@ function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
 function SearchAside() {
   return (
     <Aside type="search" heading="SEARCH">
-      <div className="predictive-search">
-        <br />
+      <div className="p-4">
         <PredictiveSearchForm>
           {({fetchResults, inputRef}) => (
-            <div>
+            <div className="flex gap-4">
               <input
                 name="q"
                 onChange={fetchResults}
                 onFocus={fetchResults}
                 placeholder="Search"
+                className="w-full pb-1 bg-transparent border-b focus:border-foreground focus:outline-none border-foreground/25"
                 ref={inputRef}
                 type="search"
               />
@@ -95,7 +96,7 @@ function SearchAside() {
                     : `/search`;
                 }}
               >
-                Search
+                <MagnifyingGlassIcon />
               </button>
             </div>
           )}

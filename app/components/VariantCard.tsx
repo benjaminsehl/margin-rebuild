@@ -31,8 +31,8 @@ function Component({
           />
         )}
         <Flex direction="column" gap="0">
-          <Text level="heading">{product.title}</Text>
-          <Text level="fine">
+          <Text variant="heading">{product.title}</Text>
+          <Text variant="fine">
             <Money
               withoutTrailingZeros
               data={product.priceRange.minVariantPrice}

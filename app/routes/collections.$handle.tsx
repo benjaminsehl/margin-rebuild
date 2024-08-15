@@ -83,10 +83,10 @@ export default function Collection() {
     <Container columns="1" pt="8rem">
       <Flex asChild align="center" justify="between">
         <header>
-          <Text asChild level="heading">
+          <Text asChild variant="heading">
             <h1>{collection.title}</h1>
           </Text>
-          <Text level="heading">{collection.products.nodes.length}</Text>
+          <Text variant="heading">{collection.products.nodes.length}</Text>
         </header>
       </Flex>
       {collection.description && <Text as="p">{collection.description}</Text>}

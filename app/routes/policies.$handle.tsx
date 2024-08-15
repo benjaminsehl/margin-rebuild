@@ -48,7 +48,7 @@ export default function Policy() {
 
   return (
     <Container columns="1" pt="8rem" fullScreen>
-      <Text asChild level="heading">
+      <Text asChild variant="heading">
         <h1>{policy.title}</h1>
       </Text>
       <div

@@ -5,6 +5,7 @@ import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {SearchForm, SearchResults, NoSearchResults} from '~/components/Search';
 import {Container} from '~/components';
 import {Box} from '@radix-ui/themes';
+import {Text} from '~/components/Text';
 
 export const meta: MetaFunction = () => {
   return [{title: `Hydrogen | Search`}];
@@ -54,7 +55,7 @@ export default function SearchPage() {
 
   return (
     <Container columns="1" pt="9rem" fullScreen>
-      <h1>Search</h1>
+      <h1 className="sr-only">Search</h1>
       <SearchForm searchTerm={searchTerm} />
       {!searchTerm || !searchResults.totalResults ? (
         <NoSearchResults />

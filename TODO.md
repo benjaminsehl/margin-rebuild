@@ -25,6 +25,7 @@
 - Would love to make this 100x easier to grok: https://shopify.dev/docs/storefronts/headless/hydrogen/caching/full-page-cache#:~:text=The%20full%2Dpage%20cache%20feature,worker%20to%20generate%20a%20response.
 - We should consider moving all client side state to Preact signals
 - https://shopify.dev/docs/storefronts/headless/hydrogen/cart/render-client-side /api/cart should just be `/cart` and it should be importing from `hydrogen` not `hydrogen-react` … overall guide could be refreshed
+- no classname on pagination is frustrating
 
 # Personal Todos
 

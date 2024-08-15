@@ -1,6 +1,6 @@
 import {Money, type OptimisticCartLine} from '@shopify/hydrogen';
 import {cx} from '@h2/utils';
-import {Text} from '@h2/Text';
+import {Text} from '~/components/Text';
 import type {
   CartLine,
   Maybe,

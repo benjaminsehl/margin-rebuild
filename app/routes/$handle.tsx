@@ -58,11 +58,7 @@ export default function Page() {
   return (
     <>
       <Container columns="1" pt="8rem" fullScreen>
-        {/* <header>
-          <Text asChild level="heading">
-            <h1>{page.title}</h1>
-          </Text>
-        </header> */}
+        <h1 className="sr-only">{page.title}</h1>
         <main className="prose" dangerouslySetInnerHTML={{__html: page.body}} />
       </Container>
     </>
