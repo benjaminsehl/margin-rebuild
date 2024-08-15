@@ -156,7 +156,7 @@ const AccordionContent = React.forwardRef(
       <ScrollArea
         type="scroll"
         scrollbars="vertical"
-        className="relative max-h-32 scrollFade"
+        className="relative sm:max-h-44 scrollFade"
       >
         <Box pr="6">
           <Text className="block mb-8 whitespace-pre-wrap">{children}</Text>

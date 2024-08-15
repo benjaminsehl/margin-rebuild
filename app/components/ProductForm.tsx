@@ -10,6 +10,7 @@ import {AddToCartButton} from '~/components/AddToCartButton';
 import {useAside} from '~/components/Aside';
 import type {loader} from '~/routes/products.$handle/route';
 import {Text} from './Text';
+import {Price, PriceCompareAt} from '@h2/Price';
 
 export function ProductForm() {
   const {product, variants} = useLoaderData<typeof loader>();
@@ -57,7 +58,9 @@ export function ProductForm() {
         }
       >
         <Text>
-          {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
+          {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'} ·{' '}
+          <Price variant={selectedVariant} />{' '}
+          <PriceCompareAt variant={selectedVariant} />
         </Text>
       </AddToCartButton>
     </div>
@@ -66,8 +69,8 @@ export function ProductForm() {
 
 function ProductOptions({option}: {option: VariantOption}) {
   return (
-    <div className="flex flex-col gap-2" key={option.name}>
-      <Text asChild level="heading">
+    <div className="flex items-baseline gap-4" key={option.name}>
+      <Text asChild level="fine">
         <h5>{option.name}</h5>
       </Text>
       <div className="flex gap-4">

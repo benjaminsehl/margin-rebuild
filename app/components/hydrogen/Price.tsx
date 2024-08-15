@@ -19,6 +19,7 @@ export function Price({
 }) {
   return (
     <Money
+      withoutTrailingZeros
       data={variant?.price || variant?.merchandise?.price || undefined}
       as={as}
       {...props}

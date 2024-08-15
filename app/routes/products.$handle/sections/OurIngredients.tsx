@@ -52,7 +52,7 @@ export default function OurIngredients() {
   ];
 
   return (
-    <Section>
+    <Section pt={{initial: '0', sm: '9'}}>
       <Header />
       <Container align="start">
         <Grid
@@ -120,7 +120,7 @@ export default function OurIngredients() {
 
 function Header() {
   return (
-    <Container>
+    <Container py={{initial: '0'}}>
       <Box gridColumn={{sm: '1 / span 7'}}>
         <h2>
           <Text level="heading">Our Ingredients</Text>
