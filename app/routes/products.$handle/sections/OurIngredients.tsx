@@ -55,14 +55,22 @@ export default function OurIngredients() {
     <Section>
       <Header />
       <Container align="start">
-        <Box gridColumn={{initial: '1 / span 2'}}>
+        <Grid
+          columns={{initial: '4', sm: '1'}}
+          gap="4"
+          pb="8"
+          gridColumn={{initial: '1', sm: '1 / span 2'}}
+        >
           {ingredients.map((ingredient, index) => (
             <Box
               key={ingredient.id}
-              display={{md: value !== `item-${index + 1}` ? 'none' : 'block'}}
+              display={{sm: value !== `item-${index + 1}` ? 'none' : 'block'}}
               onClick={() => setValue(`item-${index + 1}`)}
               position="relative"
             >
+              <Box asChild pb="2" display={{sm: 'none'}}>
+                <Text level="heading">{index + 1}</Text>
+              </Box>
               <AspectRatio ratio={1 / 1}>
                 <img
                   alt={ingredient.name}
@@ -72,8 +80,8 @@ export default function OurIngredients() {
               </AspectRatio>
             </Box>
           ))}
-        </Box>
-        <Box gridColumn={{initial: '4 / span 8'}}>
+        </Grid>
+        <Box gridColumn={{sm: '4 / span 8'}}>
           <Accordion.Root
             className=""
             type="single"
@@ -92,7 +100,7 @@ export default function OurIngredients() {
         </Box>
       </Container>
       <Container>
-        <Box gridColumn={{initial: '8 / span 4'}}>
+        <Box gridColumn={{sm: '8 / span 4'}}>
           <h3>
             <Text level="fine">Full Ingredients</Text>
           </h3>
@@ -113,12 +121,12 @@ export default function OurIngredients() {
 function Header() {
   return (
     <Container>
-      <Box gridColumn={{initial: '1 / span 7'}}>
+      <Box gridColumn={{sm: '1 / span 7'}}>
         <h2>
           <Text level="heading">Our Ingredients</Text>
         </h2>
       </Box>
-      <Box gridColumn={{initial: '8 / span 4'}}>
+      <Box gridColumn={{sm: '8 / span 4'}}>
         <Text>
           A scientifically sound approach to formula development and ingredient
           selection, prioritizing actives with proven benefits, sourced in their
@@ -139,7 +147,11 @@ const AccordionItem = React.forwardRef(
       {...props}
       ref={forwardedRef}
     >
-      <Grid gap="8" columns="2" align="baseline">
+      <Grid
+        gap={{initial: '2', sm: '8'}}
+        columns={{initial: '1', sm: '2'}}
+        align="baseline"
+      >
         {children}
       </Grid>
     </Accordion.Item>

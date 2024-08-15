@@ -13,8 +13,8 @@ export default function Container({
         position="sticky"
         top="0"
         align={align}
-        columns="12"
-        gap="8"
+        gap={{initial: '2', sm: '8'}}
+        columns={{initial: '1', sm: '12'}}
         maxWidth=""
         width="100%"
         mx="auto"

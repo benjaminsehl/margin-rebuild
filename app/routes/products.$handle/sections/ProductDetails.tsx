@@ -35,24 +35,27 @@ export default function ProductDetails() {
   return (
     <Container align="center">
       <Box
-        gridColumn="1 / span 6"
+        gridColumn={{initial: '1', sm: '1 / span 6'}}
         width="calc(100% + var(--space-5))"
         height="100%"
         mx="-3"
         overflow="hidden"
         className="rounded"
       >
-        <AspectRatio ratio={4 / 5}>
-          {product.selectedVariant?.image?.url && (
-            <img
-              src={product.selectedVariant.image.url}
-              alt="product"
-              className="object-cover w-full h-full"
-            />
-          )}
-        </AspectRatio>
+        {product.selectedVariant?.image?.url && (
+          <img
+            src={product.selectedVariant.image.url}
+            alt="product"
+            className="object-cover w-full h-full max-h-[calc(100vh-2rem)]"
+          />
+        )}
       </Box>
-      <Flex direction="column" gap="3" py="6rem" gridColumn="8 / span 4">
+      <Flex
+        direction="column"
+        gap="3"
+        py={{initial: '2rem', sm: '6rem'}}
+        gridColumn={{initial: '1', sm: '7 / span 6', md: '8 / span 4'}}
+      >
         <Flex direction="column">
           <Flex align="baseline" justify="between">
             <h1>
