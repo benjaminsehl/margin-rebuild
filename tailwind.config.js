@@ -24,7 +24,7 @@ export default {
           },
         ],
         body: [
-          '1rem',
+          '0.875rem',
           {
             lineHeight: '1.5rem',
             fontWeight: '400',

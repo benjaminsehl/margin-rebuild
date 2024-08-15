@@ -62,6 +62,8 @@ export default function Page() {
           <Flex gap="8" direction="column" key={country.country}>
             <Text level="heading">{country.country}</Text>
             <Grid
+              pb="8"
+              gap={{initial: '4', sm: '8'}}
               columns={{
                 initial: '1',
                 xs: '2',
@@ -70,7 +72,6 @@ export default function Page() {
                 lg: '5',
                 xl: '6',
               }}
-              gap={{initial: '4', md: '8'}}
             >
               {country.stockists.map((stockist) => (
                 <Flex
