@@ -1,5 +1,15 @@
-import {json, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
+import {
+  json,
+  type MetaFunction,
+  type LoaderFunctionArgs,
+} from '@shopify/remix-oxygen';
 import {useLoaderData, Link} from '@remix-run/react';
+import {Container} from '~/components';
+import {Text} from '~/components/Text';
+
+export const meta: MetaFunction<typeof loader> = ({data}) => {
+  return [{title: `Margin | Policies`}];
+};
 
 export async function loader({context}: LoaderFunctionArgs) {
   const data = await context.storefront.query(POLICIES_QUERY);
@@ -16,9 +26,11 @@ export default function Policies() {
   const {policies} = useLoaderData<typeof loader>();
 
   return (
-    <div className="policies">
-      <h1>Policies</h1>
-      <div>
+    <Container columns="1" pt="8rem" fullScreen>
+      <Text level="heading" asChild>
+        <h1>Policies</h1>
+      </Text>
+      <div className="grid gap-2">
         {policies.map((policy) => {
           if (!policy) return null;
           return (
@@ -28,7 +40,7 @@ export default function Policies() {
           );
         })}
       </div>
-    </div>
+    </Container>
   );
 }
 

@@ -97,12 +97,12 @@ export default function OurIngredients() {
             <Text level="fine">Full Ingredients</Text>
           </h3>
           <Text level="fine" as="p">
-            AQUA, GLYCERIN, COCAMIDOPROPYL BETAINE, NIACINAMIDE, ALOE
-            BARBADENSIS LEAF JUICE, CAFFEINE, ANANAS SATIVUS (PINEAPPLE) FRUIT
-            EXTRACT, ALLANTOIN, SALIX NIGRA (WILLOW) BARK EXTRACT, PANTHENOL,
-            SODIUM PCA, CELLULOSE GUM, XANTHAN GUM, INULIN, CELLULOSE, GLUCOSE,
-            FRUCTOSE, HYDROXYETHYLCELLULOSE, SODIUM CITRATE, COCO GLUCOSIDE,
-            POTASSIUM SORBATE, SODIUM BENZOATE, TOCOPHEROL, CITRIC ACID
+            Aqua, Glycerin, Cocamidopropyl Betaine, Niacinamide, Aloe
+            Barbadensis Leaf Juice, Caffeine, Ananas Sativus (Pineapple) Fruit
+            Extract, Allantoin, Salix Nigra (Willow) Bark Extract, Panthenol,
+            Sodium PCA, Cellulose Gum, Xanthan Gum, Inulin, Cellulose, Glucose,
+            Fructose, Hydroxyethylcellulose, Sodium Citrate, Coco Glucoside,
+            Potassium Sorbate, Sodium Benzoate, Tocopherol, Citric Acid
           </Text>
         </Box>
       </Container>
@@ -135,7 +135,7 @@ const AccordionItem = React.forwardRef(
     forwardedRef: React.Ref<HTMLDivElement>,
   ) => (
     <Accordion.Item
-      className={cx('border-t overflow-hidden', className)}
+      className={cx('border-t border-foreground/25 overflow-hidden', className)}
       {...props}
       ref={forwardedRef}
     >

@@ -1,6 +1,8 @@
 import {json, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {Link, useLoaderData, type MetaFunction} from '@remix-run/react';
 import {type Shop} from '@shopify/hydrogen/storefront-api-types';
+import {Container} from '~/components';
+import {Text} from '~/components/Text';
 
 type SelectedPolicies = keyof Pick<
   Shop,
@@ -8,7 +10,7 @@ type SelectedPolicies = keyof Pick<
 >;
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
-  return [{title: `Hydrogen | ${data?.policy.title ?? ''}`}];
+  return [{title: `Margin | ${data?.policy.title ?? ''}`}];
 };
 
 export async function loader({params, context}: LoaderFunctionArgs) {
@@ -45,16 +47,16 @@ export default function Policy() {
   const {policy} = useLoaderData<typeof loader>();
 
   return (
-    <div className="policy">
-      <br />
-      <br />
-      <div>
-        <Link to="/policies">← Back to Policies</Link>
-      </div>
-      <br />
-      <h1>{policy.title}</h1>
-      <div dangerouslySetInnerHTML={{__html: policy.body}} />
-    </div>
+    <Container columns="1" pt="8rem" fullScreen>
+      <Text asChild level="heading">
+        <h1>{policy.title}</h1>
+      </Text>
+      <div
+        className="prose prose-strong:uppercase prose-strong:font-heading prose-strong:text-heading prose-strong:mb-4 prose-strong:inline-block prose-a:font-normal prose-a:no-underline prose-a:border-b prose-a:border-foreground/25 hover:prose-a:border-foreground/75"
+        dangerouslySetInnerHTML={{__html: policy.body}}
+      />
+      <Link to="/policies">← Back to Policies</Link>
+    </Container>
   );
 }
 

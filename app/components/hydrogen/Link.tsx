@@ -15,6 +15,7 @@ import {Link as RemixLink} from '@remix-run/react';
 import type {LinkProps} from '@remix-run/react';
 import {useLocale} from '~/contexts/LocaleContext';
 import {Text} from '~/components/Text';
+import {redirects} from 'hydrogen.config';
 
 /**
  * Props for the LocalizedLink component.
@@ -29,10 +30,29 @@ interface LocalizedLinkProps extends Omit<LinkProps, 'to'> {
 }
 
 /**
+ * Returns the redirect path for the given path, if one exists.
+ */
+function getRedirect(path: string): string | null {
+  for (const redirect of redirects) {
+    if (redirect.from === path) {
+      // Exact match
+      return redirect.to;
+    } else if (redirect.from.endsWith('*')) {
+      // Wildcard match
+      const prefix = redirect.from.slice(0, -1);
+      if (path.startsWith(prefix)) {
+        return redirect.to.replace('*', path.slice(prefix.length));
+      }
+    }
+  }
+  return null; // No redirect found
+}
+
+/**
  * Strips the specified base URL from the given URL.
  */
 const stripUrl = (url: string) => {
-  const baseUrl = 'https://checkout.margin.global/';
+  const baseUrl = 'https://checkout.margin.global';
   return url.replace(baseUrl, '');
 };
 
@@ -68,39 +88,43 @@ export default function Link({
 }: LocalizedLinkProps) {
   const {locale} = useLocale();
 
+  // Strip the specified base URL from the 'to' prop
+  const strippedTo = stripUrl(to);
+
   /**
    * Determines if the link should be treated as external.
    */
   const isExternal = React.useMemo(() => {
     if (forceExternal) return true;
     return (
-      to.startsWith('http') ||
-      to.startsWith('//') ||
-      to.startsWith('mailto:') ||
-      to.startsWith('tel:')
+      strippedTo.startsWith('http') ||
+      strippedTo.startsWith('//') ||
+      strippedTo.startsWith('mailto:') ||
+      strippedTo.startsWith('tel:')
     );
-  }, [to, forceExternal]);
+  }, [strippedTo, forceExternal]);
 
   /**
    * Localizes the 'to' prop if necessary.
    * Adds the current locale as a prefix to the path for non-English locales.
    */
   const localizedTo = React.useMemo(() => {
-    // Strip the specified base URL from the 'to' prop
-    const strippedTo = stripUrl(to);
+    // Check for redirects
+    const redirectPath = getRedirect(strippedTo);
+    const pathToUse = redirectPath || strippedTo;
 
     if (isExternal || ignoreLocale || locale.language === 'EN') {
-      return strippedTo;
+      return pathToUse;
     }
 
-    const [pathname, query] = strippedTo.split('?');
+    const [pathname, query] = pathToUse.split('?');
     const segments = pathname.split('/').filter(Boolean);
     const localizedPath = `/${locale.language.toLowerCase()}/${segments.join(
       '/',
     )}`;
 
     return query ? `${localizedPath}?${query}` : localizedPath;
-  }, [to, locale.language, ignoreLocale, isExternal]);
+  }, [strippedTo, isExternal, ignoreLocale, locale.language]);
 
   if (isExternal) {
     return (

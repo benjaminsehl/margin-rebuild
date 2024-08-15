@@ -9,7 +9,7 @@ import {
 import type {SelectedOption} from '@shopify/hydrogen/storefront-api-types';
 import {getVariantUrl} from '~/lib/variants';
 import {OurIngredients, ProductDetails} from './sections';
-import { Box } from '@radix-ui/themes';
+import {Box} from '@radix-ui/themes';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [{title: `Hydrogen | ${data?.product.title ?? ''}`}];
