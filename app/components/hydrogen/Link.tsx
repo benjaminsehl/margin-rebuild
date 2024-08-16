@@ -82,6 +82,7 @@ export default function Link({
   variant,
   to,
   ignoreLocale = false,
+  className,
   children,
   external: forceExternal,
   ...rest
@@ -128,7 +129,7 @@ export default function Link({
 
   if (isExternal) {
     return (
-      <Text variant={variant} asChild>
+      <Text variant={variant} asChild className={className}>
         <a
           href={localizedTo}
           rel="noopener noreferrer"
@@ -142,7 +143,7 @@ export default function Link({
   }
 
   return (
-    <Text variant={variant} asChild>
+    <Text variant={variant} asChild className={className}>
       <RemixLink
         unstable_viewTransition
         prefetch={prefetch}

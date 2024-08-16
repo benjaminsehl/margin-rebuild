@@ -16,7 +16,7 @@ function Component({
   return (
     <Flex direction="column" gap="2" pb="5" asChild>
       <Link
-        className="items-center text-center"
+        className="items-center text-center max-w-none"
         key={product.id}
         to={variantUrl}
       >
