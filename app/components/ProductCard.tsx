@@ -45,7 +45,7 @@ function Component({
 }
 
 export const PRODUCT_CARD_FRAGMENT = `#graphql
-    fragment Money on MoneyV2 {
+    fragment ProductCardMoney on MoneyV2 {
       amount
       currencyCode
     }
@@ -62,10 +62,10 @@ export const PRODUCT_CARD_FRAGMENT = `#graphql
       }
       priceRange {
         minVariantPrice {
-          ...Money
+          ...ProductCardMoney
         }
         maxVariantPrice {
-          ...Money
+          ...ProductCardMoney
         }
       }
       variants(first: 1) {

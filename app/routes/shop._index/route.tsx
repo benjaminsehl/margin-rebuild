@@ -1,65 +1,45 @@
-import {defer, redirect, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
+import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {useLoaderData, type MetaFunction} from '@remix-run/react';
-import {
-  Pagination,
-  getPaginationVariables,
-  Image,
-  Money,
-  Analytics,
-} from '@shopify/hydrogen';
-import type {ProductItemFragment} from 'storefrontapi.generated';
-import {useVariantUrl} from '~/lib/variants';
-import Link from '@h2/Link';
-import ProductCard from '~/components/ProductCard';
+import {Pagination, getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {Container} from '~/components';
-import {Text} from '~/components/Text';
-import {Product} from '@shopify/hydrogen/storefront-api-types';
-import {Flex, Grid} from '@radix-ui/themes';
+import {Grid} from '@radix-ui/themes';
+import ProductCard from '~/components/ProductCard';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
-  return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
+  return [{title: `Margin · ${data?.collection.title ?? ''} Collection`}];
 };
 
 export async function loader(args: LoaderFunctionArgs) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
-
   // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
 
-  return defer({...deferredData, ...criticalData});
+  return defer({...criticalData});
 }
 
 /**
  * Load data necessary for rendering content above the fold. This is the critical data
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
  */
-async function loadCriticalData({
-  context,
-  params,
-  request,
-}: LoaderFunctionArgs) {
-  const {handle} = params;
+async function loadCriticalData({context, request}: LoaderFunctionArgs) {
   const {storefront} = context;
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 28,
+    pageBy: 12,
   });
-
-  if (!handle) {
-    throw redirect('/collections');
-  }
 
   const [{collection}] = await Promise.all([
     storefront.query(COLLECTION_QUERY, {
-      variables: {handle, ...paginationVariables},
+      variables: {handle: 'shop', ...paginationVariables},
       // Add other queries here, so that they are loaded in parallel
     }),
   ]);
 
   if (!collection) {
-    throw new Response(`Collection ${handle} not found`, {
-      status: 404,
-    });
+    throw new Response(
+      `We’re all sold out. Follow @margin.global on Instagram for updates.`,
+      {
+        status: 404,
+      },
+    );
   }
 
   return {
@@ -67,37 +47,28 @@ async function loadCriticalData({
   };
 }
 
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
-function loadDeferredData({context}: LoaderFunctionArgs) {
-  return {};
-}
-
-export default function Collection() {
+export default function Shop() {
   const {collection} = useLoaderData<typeof loader>();
 
   return (
-    <Container columns="1" pt="8rem">
-      <Flex asChild align="center" justify="between">
-        <header>
-          <Text asChild variant="heading">
-            <h1>{collection.title}</h1>
-          </Text>
-          <Text variant="heading">{collection.products.nodes.length}</Text>
-        </header>
-      </Flex>
-      {collection.description && <Text as="p">{collection.description}</Text>}
+    <Container fullScreen columns="1" pt="5rem">
       <Pagination connection={collection.products}>
         {({nodes, isLoading, PreviousLink, NextLink}) => (
           <>
             <PreviousLink>
               {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
             </PreviousLink>
-            <ProductsGrid products={nodes} />
-            <br />
+            <Grid columns={{initial: '1', xs: '2', md: '3'}}>
+              {nodes.map((product: any, index) => {
+                return (
+                  <ProductCard.Component
+                    key={product.id}
+                    product={product}
+                    loading={index < 8 ? 'eager' : undefined}
+                  />
+                );
+              })}
+            </Grid>
             <NextLink>
               {isLoading ? 'Loading...' : <span>Load more ↓</span>}
             </NextLink>
@@ -113,22 +84,6 @@ export default function Collection() {
         }}
       />
     </Container>
-  );
-}
-
-function ProductsGrid({products}: {products: Product[]}) {
-  return (
-    <Grid columns="3">
-      {products.map((product, index) => {
-        return (
-          <ProductCard.Component
-            key={product.id}
-            product={product}
-            loading={index < 8 ? 'eager' : undefined}
-          />
-        );
-      })}
-    </Grid>
   );
 }
 
@@ -168,3 +123,42 @@ const COLLECTION_QUERY = `#graphql
     }
   }
 ` as const;
+
+// eslint-disable-next-line no-lone-blocks
+{
+  /* <Box width="100%">
+        <Grid
+          position="sticky"
+          top="0"
+          columns="2"
+          gap="2"
+          width="100%"
+          mx="auto"
+          px="5"
+          py="4"
+        >
+          <Box gridColumn="2" className="pt-12 bg-white">
+            <ScrollArea
+              type="scroll"
+              scrollbars="vertical"
+              className="h-screen"
+            >
+              <Grid columns="3" height="calc(100vh - 5rem)">
+                {collection.products.nodes.map((product, index) => {
+                  return (
+                    <ProductCard.Component
+                      key={product.id}
+                      product={product}
+                      loading={index < 8 ? 'eager' : undefined}
+                    />
+                  );
+                })}
+                {[...Array(100)].map((_, index) => (
+                  <div key={index} />
+                ))}
+              </Grid>
+            </ScrollArea>
+          </Box>
+        </Grid>
+      </Box> */
+}

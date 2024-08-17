@@ -8,7 +8,7 @@ import {
 import {Suspense} from 'react';
 import {AddToCartButton} from '~/components/AddToCartButton';
 import {useAside} from '~/components/Aside';
-import type {loader} from '~/routes/products.$handle/route';
+import type {loader} from '~/routes/shop.$handle/route';
 import {Text} from './Text';
 import {Price, PriceCompareAt} from '@h2/Price';
 
@@ -28,7 +28,7 @@ export function ProductForm() {
             <VariantSelector
               handle={product.handle}
               options={product.options.filter(
-                (option) => option.values.length > 1,
+                (option: {values: string | any[]}) => option.values.length > 1,
               )}
               variants={data?.product?.variants.nodes || []}
             >

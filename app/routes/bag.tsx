@@ -12,7 +12,7 @@ import {Text} from '~/components/Text';
 import {useCart} from '~/contexts/CartContext';
 
 export const meta: MetaFunction = () => {
-  return [{title: `Hydrogen | Cart`}];
+  return [{title: `Margin · Cart`}];
 };
 
 export async function action({request, context}: ActionFunctionArgs) {

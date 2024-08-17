@@ -8,7 +8,7 @@ import {Container} from '~/components';
 import {Text} from '~/components/Text';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
-  return [{title: `Margin | Policies`}];
+  return [{title: `Margin · Policies`}];
 };
 
 export async function loader({context}: LoaderFunctionArgs) {

@@ -26,6 +26,7 @@
 - We should consider moving all client side state to Preact signals
 - https://shopify.dev/docs/storefronts/headless/hydrogen/cart/render-client-side /api/cart should just be `/cart` and it should be importing from `hydrogen` not `hydrogen-react` … overall guide could be refreshed
 - no classname on pagination is frustrating
+- no hardcoded strings for pathnames … if you want to rename products.$handle to shop.$handle, you should just have to rename the route file and everything else "just works" -> i.e. "named routes"
 
 # Personal Todos
 

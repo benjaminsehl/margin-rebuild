@@ -1,36 +1,17 @@
-import {AspectRatio, Box, Flex, ScrollArea} from '@radix-ui/themes';
+import {Box, Flex, ScrollArea} from '@radix-ui/themes';
 import {useLoaderData} from '@remix-run/react';
 import {Container} from '~/components';
 import {ProductForm} from '~/components/ProductForm';
 import * as Accordion from '@radix-ui/react-accordion';
-import type {loader} from '~/routes/products.$handle/route';
+import type {loader} from '~/routes/shop.$handle/route';
 import React from 'react';
 import {Text} from '~/components/Text';
 import {cx} from '@h2/utils';
+import Link from '@h2/Link';
+import RichText from '@h2/RichText';
 
 export default function ProductDetails() {
   const {product} = useLoaderData<typeof loader>();
-
-  const notes = [
-    {
-      id: 'gid://shopify/Metaobject/1234567890',
-      title: 'Key Benefits',
-      description:
-        'Cleansing without stripping: \nA skin-enriching formulation of 5% Glycerin plus Hyaluronic Acid, Argan Oil and Jojoba Oil replenishes the skin. \nSmoothing without over-exfoliating: \n1% Gluconolactone, the polyhydroxy acid (PHA) powerhouse, gently exfoliates the skin while drawing in moisture \nBarrier balancing & inflamation reducing: \nA barrier building complex of 2% Niacinamide (Vitamin B3), Allantoin and Tocopherol (Vitamin E) soothes and balances the skin, reducing the signs of irritation and inflammation while also supporting barrier function. \nGood for: \nFrequent showers \nTotal-body cleansing without a dry, stripped sensation \nPre-shave prep, and as a shaving medium',
-    },
-    {
-      id: 'gid://shopify/Metaobject/1234567891',
-      title: 'Product Details',
-      description:
-        'Made for daily or more-than-daily showerers, this body wash improves the skin impact and experience of body cleansing without stripping the skin. \nDispense onto hands or bathing tool and massage into damp skin to develop a rich foam. Rinse well. Intended for use from the neck down. In the event of contact with eyes, rinse thoroughly with water. \npH: 4.8 - 5.4 \nFree from Parabens, Sulfates, Phthalates, PEGs, Mineral Oils, and Artificial Colours.',
-    },
-    {
-      id: 'gid://shopify/Metaobject/1234567892',
-      title: 'Shipping & Returns',
-      description:
-        'Free shipping on all orders over $50. For questions about products or your order, visit our FAQ or Email us: info@margin.global',
-    },
-  ];
 
   return (
     <Container align="center">
@@ -54,7 +35,7 @@ export default function ProductDetails() {
         direction="column"
         gap="3"
         py={{initial: '2rem', sm: '6rem'}}
-        gridColumn={{initial: '1', sm: '7 / span 6', md: '8 / span 4'}}
+        gridColumn={{initial: '1', sm: '7 / span 6', lg: '8 / span 4'}}
       >
         <Flex direction="column">
           <Flex align="baseline" justify="between">
@@ -74,12 +55,33 @@ export default function ProductDetails() {
         <ProductForm />
         <Box pt="7">
           <Accordion.Root type="single" collapsible>
-            {notes.map((note, index) => (
-              <AccordionItem value={`item-${index + 1}`} key={note.id}>
-                <AccordionTrigger>{note.title}</AccordionTrigger>
-                <AccordionContent>{note.description}</AccordionContent>
+            {product?.keyBenefits?.value && (
+              <AccordionItem value={`item-1`}>
+                <AccordionTrigger>Key Benefits</AccordionTrigger>
+                <AccordionContent>
+                  <RichText data={product.keyBenefits.value} />
+                </AccordionContent>
               </AccordionItem>
-            ))}
+            )}
+            {product?.details?.value && (
+              <AccordionItem value={`item-2`}>
+                <AccordionTrigger>Product Details</AccordionTrigger>
+                <AccordionContent>
+                  <RichText data={product.details.value} />
+                </AccordionContent>
+              </AccordionItem>
+            )}
+
+            <AccordionItem value={`item-1`}>
+              <AccordionTrigger>Shipping & Returns</AccordionTrigger>
+              <AccordionContent>
+                <Text as="p" variant="body" className="prose">
+                  Free shipping on all orders over $50. For questions about
+                  products or your order, visit our FAQ or Email us:{' '}
+                  <Link to="mailto:info@margin.global">info@margin.global</Link>
+                </Text>
+              </AccordionContent>
+            </AccordionItem>
           </Accordion.Root>
         </Box>
       </Flex>

@@ -7,7 +7,7 @@ import Link from '@h2/Link';
 import {Flex, Grid} from '@radix-ui/themes';
 
 export const meta: MetaFunction<typeof loader> = () => {
-  return [{title: `Margin | Stockists`}];
+  return [{title: `Margin · Stockists`}];
 };
 
 export async function loader(args: LoaderFunctionArgs) {

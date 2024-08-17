@@ -180,7 +180,7 @@ function SearchResultsProductsGrid({
                 <Link
                   className="flex items-center gap-4"
                   prefetch="intent"
-                  to={`/products/${product.handle}${trackingParams}`}
+                  to={`/shop/${product.handle}${trackingParams}`}
                 >
                   {product.variants.nodes[0].image && (
                     <Image

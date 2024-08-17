@@ -5,7 +5,8 @@ type Redirect = {
 
 export const redirects: Redirect[] = [
   {from: '/pages/*', to: '/*'},
-  {from: '/collections/all', to: '/shop'},
-  {from: '/products', to: '/shop'},
+  {from: '/collections/*', to: '/shop'},
+  {from: '/products/*', to: '/shop/*'},
   {from: '/cart', to: '/bag'},
+  {from: '/blogs/*', to: '/editorial/*'},
 ];

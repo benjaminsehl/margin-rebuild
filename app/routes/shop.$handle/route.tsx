@@ -12,7 +12,7 @@ import {OurIngredients, ProductDetails} from './sections';
 import {Box} from '@radix-ui/themes';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
-  return [{title: `Hydrogen | ${data?.product.title ?? ''}`}];
+  return [{title: `Margin · ${data?.product.title ?? ''}`}];
 };
 
 export async function loader(args: LoaderFunctionArgs) {
@@ -200,6 +200,46 @@ const PRODUCT_FRAGMENT = `#graphql
     handle
     descriptionHtml
     subtitle: metafield(namespace:"descriptors", key:"subtitle"){
+      value
+    }
+    title
+    keyBenefits: metafield(namespace:"details", key:"key_benefits") {
+      value
+    }
+    details: metafield(namespace: "details", key:"product_details") {
+      value
+    }
+    ingredientsHeadline: metafield(namespace: "ingredients", key: "headline") {
+      value
+    }
+    keyIngredients: metafield(namespace: "ingredients", key: "items") {
+      references(first: 10) {
+        nodes {
+          ... on Metaobject {
+            id
+            title: field(key:"title") {
+              value
+            }
+            description: field(key:"description"){
+              value
+            }
+            image: field(key:"image"){
+              reference {
+                ... on MediaImage {
+                  image {
+                    altText
+                    height
+                    width
+                    url
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    fullIngredients: metafield(namespace: "ingredients", key: "other") {
       value
     }
     options {

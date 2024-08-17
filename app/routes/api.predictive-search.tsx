@@ -150,7 +150,7 @@ export function normalizePredictiveSearchResults(
             id: product.id,
             image: product.variants?.nodes?.[0]?.image,
             title: product.title,
-            url: `${localePrefix}/products/${product.handle}${trackingParams}`,
+            url: `${localePrefix}/shop/${product.handle}${trackingParams}`,
             price: product.variants.nodes[0].price,
           };
         },

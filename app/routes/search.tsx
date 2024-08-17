@@ -4,11 +4,9 @@ import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 
 import {SearchForm, SearchResults, NoSearchResults} from '~/components/Search';
 import {Container} from '~/components';
-import {Box} from '@radix-ui/themes';
-import {Text} from '~/components/Text';
 
 export const meta: MetaFunction = () => {
-  return [{title: `Hydrogen | Search`}];
+  return [{title: `Margin · Search`}];
 };
 
 export async function loader({request, context}: LoaderFunctionArgs) {
