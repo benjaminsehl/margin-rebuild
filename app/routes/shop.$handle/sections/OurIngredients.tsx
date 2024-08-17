@@ -78,7 +78,7 @@ export default function OurIngredients() {
   return (
     <Section pt={{initial: '0', sm: '9'}}>
       {headline && <Header>{headline}</Header>}
-      {ingredients.length > 0 && (
+      {ingredients && ingredients.length > 0 && (
         <Container align="start">
           <Grid
             columns={{initial: '4', sm: '1'}}
