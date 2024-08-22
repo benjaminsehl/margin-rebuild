@@ -10,7 +10,7 @@ const Canvas = lazy(() =>
 
 export default function Hero() {
   return (
-    <div className="w-full h-screen overflow-hidden">
+    <div className="w-full h-dvh overflow-hidden">
       <Suspense fallback={<BackgroundFallback />}>
         <Canvas style={{width: '100%', height: '100%'}}>
           <RainEffect />
