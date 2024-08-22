@@ -20,10 +20,10 @@ export default function Hero() {
         <Container columns="1">
           <Flex className="text-background" direction="column" gap="2">
             <Text wrap="balance">
-              Multifunctional skincare products built on active ingredients.
+              Multifunctional performance products for your skin and senses.
             </Text>
             <Text wrap="balance">
-              Developed in LA, manufactured in Toronto.
+              Do more with less.
             </Text>
             <Link prefetch="render" to="/shop">
               <span className="inline pb-px border-b border-background/25">
