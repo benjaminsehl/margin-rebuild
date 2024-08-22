@@ -38,7 +38,7 @@ export function Aside({
       role="dialog"
     >
       <button className="close-outside" onClick={close} />
-      <aside className="flex flex-col w-full h-screen max-w-md shadow-xl bg-background">
+      <aside className="flex flex-col w-full h-dvh max-w-md shadow-xl bg-background">
         <header className="flex justify-between flex-shrink-0 p-4 border-b border-foreground/25">
           <Text asChild variant="heading">
             <h3>{heading}</h3>
