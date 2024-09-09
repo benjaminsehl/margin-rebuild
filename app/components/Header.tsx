@@ -313,7 +313,12 @@ function SearchToggle() {
     open('search');
   };
   return (
-    <Link prefetch="intent" variant="heading" to="/search" onClick={handleClick}>
+    <Link
+      prefetch="intent"
+      variant="heading"
+      to="/search"
+      onClick={handleClick}
+    >
       Search
     </Link>
   );
