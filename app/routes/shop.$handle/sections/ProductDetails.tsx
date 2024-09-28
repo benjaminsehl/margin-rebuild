@@ -76,7 +76,7 @@ export default function ProductDetails() {
               <AccordionTrigger>Shipping & Returns</AccordionTrigger>
               <AccordionContent>
                 <Text as="p" variant="body" className="prose">
-                  Free shipping on all orders over $50. For questions about
+                  Free shipping on all orders over $40. For questions about
                   products or your order, visit our FAQ or Email us:{' '}
                   <Link to="mailto:info@margin.global">info@margin.global</Link>
                 </Text>
