@@ -20,10 +20,10 @@ export default function Hero() {
         <Container columns="1">
           <Flex className="text-background" direction="column" gap="2">
             <Text wrap="balance">
-Seasonal Savings Are On Now
+The Scent Set of the Season
             </Text>
             <Text wrap="balance">
-Receive 20% Off Your Entire Order With Code 'BFCM' At Checkout
+Save 15% on the Warm Water Bundle at Checkout
             </Text>
             <Link prefetch="render" to="/shop">
               <span className="inline pb-px border-b border-background/25">
