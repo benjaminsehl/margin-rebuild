@@ -1,5 +1,3 @@
-import {PRODUCT_CARD_FRAGMENT} from '~/components/ProductCard';
-
 // NOTE: https://shopify.dev/docs/api/storefront/latest/queries/cart
 export const CART_QUERY_FRAGMENT = `#graphql
   fragment Money on MoneyV2 {
@@ -57,9 +55,65 @@ export const CART_QUERY_FRAGMENT = `#graphql
       }
     }
   }
+  fragment CartLineComponent on ComponentizableCartLine {
+    id
+    quantity
+    attributes {
+      key
+      value
+    }
+    cost {
+      totalAmount {
+        ...Money
+      }
+      amountPerQuantity {
+        ...Money
+      }
+      compareAtAmountPerQuantity {
+        ...Money
+      }
+    }
+    merchandise {
+      ... on ProductVariant {
+        id
+        availableForSale
+        compareAtPrice {
+          ...Money
+        }
+        price {
+          ...Money
+        }
+        requiresShipping
+        title
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+        product {
+          handle
+          title
+          id
+          vendor
+        }
+        selectedOptions {
+          name
+          value
+        }
+      }
+    }
+  }
   fragment CartApiQuery on Cart {
     updatedAt
     id
+    appliedGiftCards {
+      lastCharacters
+      amountUsed {
+        ...Money
+      }
+    }
     checkoutUrl
     totalQuantity
     buyerIdentity {
@@ -77,6 +131,9 @@ export const CART_QUERY_FRAGMENT = `#graphql
     lines(first: $numCartLines) {
       nodes {
         ...CartLine
+      }
+      nodes {
+        ...CartLineComponent
       }
     }
     cost {

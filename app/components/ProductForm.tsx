@@ -1,44 +1,89 @@
-import Link from '@h2/Link';
-import {Await, useLoaderData} from '@remix-run/react';
-import {
-  useOptimisticVariant,
-  type VariantOption,
-  VariantSelector,
-} from '@shopify/hydrogen';
-import {Suspense} from 'react';
-import {AddToCartButton} from '~/components/AddToCartButton';
-import {useAside} from '~/components/Aside';
-import type {loader} from '~/routes/shop.$handle/route';
+import {Link, useNavigate} from '@remix-run/react';
+import {type MappedProductOptions} from '@shopify/hydrogen';
+import type {
+  Maybe,
+  ProductOptionValueSwatch,
+} from '@shopify/hydrogen/storefront-api-types';
+import {AddToCartButton} from './AddToCartButton';
+import {useAside} from './Aside';
 import {Text} from './Text';
 import {Price, PriceCompareAt} from '@h2/Price';
+import type {ProductFragment} from 'storefrontapi.generated';
 
-export function ProductForm() {
-  const {product, variants} = useLoaderData<typeof loader>();
-  const selectedVariant = useOptimisticVariant(
-    product.selectedVariant,
-    variants,
-  );
-
+export function ProductForm({
+  productOptions,
+  selectedVariant,
+}: {
+  productOptions: MappedProductOptions[];
+  selectedVariant: ProductFragment['selectedOrFirstAvailableVariant'];
+}) {
+  const navigate = useNavigate();
   const {open} = useAside();
+
   return (
     <div className="product-form">
-      <Suspense>
-        <Await resolve={variants}>
-          {(data) => (
-            <VariantSelector
-              handle={product.handle}
-              options={product.options.filter(
-                (option: {values: string | any[]}) => option.values.length > 1,
-              )}
-              variants={data?.product?.variants.nodes || []}
-            >
-              {({option}) => (
-                <ProductOptions key={option.name} option={option} />
-              )}
-            </VariantSelector>
-          )}
-        </Await>
-      </Suspense>
+      {productOptions.map((option) => {
+        if (option.optionValues.length === 1) return null;
+
+        return (
+          <div className="flex items-baseline gap-4" key={option.name}>
+            <Text asChild variant="fine">
+              <h5>{option.name}</h5>
+            </Text>
+            <div className="flex gap-4">
+              {option.optionValues.map((value) => {
+                const {
+                  name,
+                  handle,
+                  variantUriQuery,
+                  selected,
+                  available,
+                  exists,
+                  isDifferentProduct,
+                } = value;
+
+                const className = `border-b ${
+                  selected ? 'border-foreground/50' : 'border-transparent'
+                } ${available ? '' : 'opacity-30'}`;
+
+                if (isDifferentProduct) {
+                  return (
+                    <Link
+                      className={className}
+                      key={option.name + name}
+                      prefetch="intent"
+                      preventScrollReset
+                      replace
+                      to={`/products/${handle}?${variantUriQuery}`}
+                    >
+                      {name}
+                    </Link>
+                  );
+                }
+
+                return (
+                  <button
+                    type="button"
+                    className={className}
+                    key={option.name + name}
+                    disabled={!exists}
+                    onClick={() => {
+                      if (!selected) {
+                        navigate(`?${variantUriQuery}`, {
+                          replace: true,
+                          preventScrollReset: true,
+                        });
+                      }
+                    }}
+                  >
+                    {name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
       <br />
       <AddToCartButton
         disabled={!selectedVariant || !selectedVariant.availableForSale}
@@ -63,34 +108,6 @@ export function ProductForm() {
           <PriceCompareAt variant={selectedVariant} />
         </Text>
       </AddToCartButton>
-    </div>
-  );
-}
-
-function ProductOptions({option}: {option: VariantOption}) {
-  return (
-    <div className="flex items-baseline gap-4" key={option.name}>
-      <Text asChild variant="fine">
-        <h5>{option.name}</h5>
-      </Text>
-      <div className="flex gap-4">
-        {option.values.map(({value, isAvailable, isActive, to}) => {
-          return (
-            <Link
-              className={`border-b ${
-                isActive ? 'border-foreground/50' : 'border-transparent'
-              } ${isAvailable ? '' : 'opacity-30'}`}
-              key={option.name + value}
-              prefetch="intent"
-              preventScrollReset
-              replace
-              to={to}
-            >
-              {value}
-            </Link>
-          );
-        })}
-      </div>
     </div>
   );
 }
