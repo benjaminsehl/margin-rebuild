@@ -1,4 +1,4 @@
-import {useNonce, getShopAnalytics, Analytics} from '@shopify/hydrogen';
+import {useNonce, getShopAnalytics, Analytics, Script} from '@shopify/hydrogen';
 import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {
   Links,
@@ -22,6 +22,7 @@ import {Text} from '~/components/Text';
 import {useRouteLayout} from './lib/layout';
 import {CartProvider, useCart} from './contexts/CartContext';
 import {Container} from './components';
+import {GoogleTagManager} from '~/components/GoogleTagManager';
 
 export type RootLoader = typeof loader;
 
@@ -135,8 +136,28 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
+        <Script
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-KHNJ4MH7');`,
+          }}
+        ></Script>
       </head>
       <body>
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-KHNJ4MH7"
+            height="0"
+            width="0"
+            style={{
+              display: 'none',
+              visibility: 'hidden',
+            }}
+          ></iframe>
+        </noscript>
         {/* TODO: Dark Mode support https://www.mattstobbs.com/remix-dark-mode/ */}
         <Theme appearance="light" accentColor="yellow">
           <LocaleProvider initialLocale={data.locale}>
@@ -147,6 +168,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
                 consent={data.consent}
               >
                 <Layout {...data}>{children}</Layout>
+                <GoogleTagManager />
               </Analytics.Provider>
             </CartProvider>
           </LocaleProvider>
