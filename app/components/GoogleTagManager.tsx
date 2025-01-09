@@ -18,17 +18,24 @@ export function GoogleTagManager() {
   const {subscribe, register} = useAnalytics();
   const {ready} = register('Google Tag Manager');
 
-  const getCookie = (name: string) => {
+  function getCookie(name: string) {
+    if (typeof document === 'undefined') {
+      return null; // We're on the server
+    }
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop()?.split(';').shift();
     return null;
-  };
+  }
+
   const gaClientId = getCookie('_ga')?.split('.').slice(-2).join('.');
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     // Page View
     subscribe('page_viewed', (data: PageViewPayload) => {
+      if (!window.dataLayer) return;
       window.dataLayer.push({
         event: 'page_view',
         page_location: data.url,
@@ -39,6 +46,7 @@ export function GoogleTagManager() {
 
     // Product View
     subscribe('product_viewed', (data: ProductViewPayload) => {
+      if (!window.dataLayer) return;
       window.dataLayer.push({
         event: 'view_item',
         ecommerce: {
@@ -58,6 +66,7 @@ export function GoogleTagManager() {
     });
     // CART VIEW
     subscribe('cart_viewed', (data: CartViewPayload) => {
+      if (!window.dataLayer) return;
       window.dataLayer.push({
         event: 'view_cart',
         ecommerce: {
@@ -76,6 +85,7 @@ export function GoogleTagManager() {
 
     // Search
     subscribe('search_viewed', (data: SearchViewPayload) => {
+      if (!window.dataLayer) return;
       window.dataLayer.push({
         event: 'search',
         search_term: data.searchTerm,
@@ -85,6 +95,7 @@ export function GoogleTagManager() {
 
     // Add to Cart
     subscribe('product_added_to_cart', (data: CartUpdatePayload) => {
+      if (!window.dataLayer) return;
       const newItems = data.cart?.lines.nodes.filter(
         (node) =>
           !data.prevCart?.lines.nodes.some(
@@ -110,6 +121,7 @@ export function GoogleTagManager() {
 
     // Remove from Cart
     subscribe('product_removed_from_cart', (data: CartUpdatePayload) => {
+      if (!window.dataLayer) return;
       const removedItems = data.prevCart?.lines.nodes.filter(
         (node) =>
           !data.cart?.lines.nodes.some(
