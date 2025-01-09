@@ -144,12 +144,7 @@ export default function Link({
 
   return (
     <Text variant={variant} asChild className={className}>
-      <RemixLink
-        unstable_viewTransition
-        prefetch={prefetch}
-        to={localizedTo}
-        {...rest}
-      >
+      <RemixLink viewTransition prefetch={prefetch} to={localizedTo} {...rest}>
         {children}
       </RemixLink>
     </Text>

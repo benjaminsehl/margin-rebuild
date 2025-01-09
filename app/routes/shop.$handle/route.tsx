@@ -5,6 +5,9 @@ import {
   getSelectedProductOptions,
   Analytics,
   useOptimisticVariant,
+  getProductOptions,
+  getAdjacentAndFirstAvailableVariants,
+  useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
 import type {SelectedOption} from '@shopify/hydrogen/storefront-api-types';
 import {getVariantUrl} from '~/lib/variants';
@@ -52,24 +55,7 @@ async function loadCriticalData({
     throw new Response(null, {status: 404});
   }
 
-  const firstVariant = product.variants.nodes[0];
-  const firstVariantIsDefault = Boolean(
-    firstVariant.selectedOptions.find(
-      (option: SelectedOption) =>
-        option.name === 'Title' && option.value === 'Default Title',
-    ),
-  );
-
-  if (firstVariantIsDefault) {
-    product.selectedVariant = firstVariant;
-  } else {
-    // if no selected variant was returned from the selected options,
-    // we redirect to the first variant's url with it's selected options applied
-    if (!product.selectedVariant) {
-      throw redirectToFirstVariant({product, request});
-    }
-  }
-
+  // The new API handles variant selection automatically
   return {
     product,
   };
@@ -125,15 +111,26 @@ function redirectToFirstVariant({
 }
 
 export default function Product() {
-  const {product, variants} = useLoaderData<typeof loader>();
+  const {product} = useLoaderData<typeof loader>();
+
   const selectedVariant = useOptimisticVariant(
-    product.selectedVariant,
-    variants,
+    product.selectedOrFirstAvailableVariant,
+    getAdjacentAndFirstAvailableVariants(product),
   );
+
+  useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
+
+  const productOptions = getProductOptions({
+    ...product,
+    selectedOrFirstAvailableVariant: selectedVariant,
+  });
 
   return (
     <Box pb="9">
-      <ProductDetails />
+      <ProductDetails
+        productOptions={productOptions}
+        selectedVariant={selectedVariant}
+      />
       <OurIngredients />
 
       <Analytics.ProductView
@@ -202,7 +199,6 @@ const PRODUCT_FRAGMENT = `#graphql
     subtitle: metafield(namespace:"descriptors", key:"subtitle"){
       value
     }
-    title
     keyBenefits: metafield(namespace:"details", key:"key_benefits") {
       value
     }
@@ -242,17 +238,30 @@ const PRODUCT_FRAGMENT = `#graphql
     fullIngredients: metafield(namespace: "ingredients", key: "other") {
       value
     }
+    encodedVariantExistence
+    encodedVariantAvailability
     options {
       name
-      values
+      optionValues {
+        name
+        firstSelectableVariant {
+          ...ProductVariant
+        }
+        swatch {
+          color
+          image {
+            previewImage {
+              url
+            }
+          }
+        }
+      }
     }
-    selectedVariant: variantBySelectedOptions(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
+    selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
       ...ProductVariant
     }
-    variants(first: 1) {
-      nodes {
-        ...ProductVariant
-      }
+    adjacentVariants(selectedOptions: $selectedOptions) {
+      ...ProductVariant
     }
     seo {
       description

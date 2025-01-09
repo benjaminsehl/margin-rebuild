@@ -9,8 +9,16 @@ import {Text} from '~/components/Text';
 import {cx} from '@h2/utils';
 import Link from '@h2/Link';
 import RichText from '@h2/RichText';
+import type {MappedProductOptions} from '@shopify/hydrogen';
+import type {ProductFragment} from 'storefrontapi.generated';
 
-export default function ProductDetails() {
+export default function ProductDetails({
+  productOptions,
+  selectedVariant,
+}: {
+  productOptions: MappedProductOptions[];
+  selectedVariant: ProductFragment['selectedOrFirstAvailableVariant'];
+}) {
   const {product} = useLoaderData<typeof loader>();
 
   return (
@@ -23,9 +31,9 @@ export default function ProductDetails() {
         overflow="hidden"
         className="rounded"
       >
-        {product.selectedVariant?.image?.url && (
+        {selectedVariant?.image?.url && (
           <img
-            src={product.selectedVariant.image.url}
+            src={selectedVariant.image.url}
             alt="product"
             className="object-cover w-full h-full max-h-[calc(100vh-2rem)]"
           />
@@ -52,7 +60,10 @@ export default function ProductDetails() {
             <span dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
           </Text>
         </Flex>
-        <ProductForm />
+        <ProductForm
+          productOptions={productOptions}
+          selectedVariant={selectedVariant}
+        />
         <Box pt="7">
           <Accordion.Root type="single" collapsible>
             {product?.keyBenefits?.value && (
@@ -76,7 +87,7 @@ export default function ProductDetails() {
               <AccordionTrigger>Shipping & Returns</AccordionTrigger>
               <AccordionContent>
                 <Text as="p" variant="body" className="prose">
-                  Free shipping on all orders over $40. For questions about
+                  Free shipping on all orders over $40. For questions about
                   products or your order, visit our FAQ or Email us:{' '}
                   <Link to="mailto:info@margin.global">info@margin.global</Link>
                 </Text>
