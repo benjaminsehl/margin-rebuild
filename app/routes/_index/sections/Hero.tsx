@@ -10,7 +10,7 @@ const Canvas = lazy(() =>
 
 export default function Hero() {
   return (
-    <div className="w-full h-dvh overflow-hidden">
+    <div className="w-full overflow-hidden h-dvh">
       <Suspense fallback={<BackgroundFallback />}>
         <Canvas style={{width: '100%', height: '100%'}}>
           <RainEffect />
@@ -19,13 +19,11 @@ export default function Hero() {
       <div className="absolute w-full bottom-[20vh]">
         <Container columns="1">
           <Flex className="text-background" direction="column" gap="2">
-            <Text wrap="balance">
-The Scent Set of the Season
+            <Text wrap="balance" className="uppercase">
+              A biotech breakthrough foryour barrier
             </Text>
-            <Text wrap="balance">
-Save 15% on the Warm Water Bundle at Checkout
-            </Text>
-            <Link prefetch="render" to="/shop">
+            <Text wrap="balance">Reveal a younger you with DHK Defence</Text>
+            <Link prefetch="render" to="/shop/dhk-defence">
               <span className="inline pb-px border-b border-background/25">
                 Shop now
               </span>
