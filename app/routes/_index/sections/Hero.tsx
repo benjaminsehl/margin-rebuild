@@ -20,9 +20,9 @@ export default function Hero() {
         <Container columns="1">
           <Flex className="text-background" direction="column" gap="2">
             <Text wrap="balance" className="uppercase">
-              A biotech breakthrough foryour barrier
+              A biotech breakthrough for your barrier
             </Text>
-            <Text wrap="balance">Reveal a younger you with DHK Defence</Text>
+            <Text wrap="balance">Reveal a younger you with DHK DEFENCE</Text>
             <Link prefetch="render" to="/shop/dhk-defence">
               <span className="inline pb-px border-b border-background/25">
                 Shop now
