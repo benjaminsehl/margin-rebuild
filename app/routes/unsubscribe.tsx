@@ -1,5 +1,5 @@
-import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {useLoaderData, type MetaFunction} from '@remix-run/react';
+import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
+import {type MetaFunction} from '@remix-run/react';
 import {Container} from '~/components';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
@@ -25,22 +25,3 @@ export default function Page() {
     </>
   );
 }
-
-const PAGE_QUERY = `#graphql
-  query Page(
-    $language: LanguageCode,
-    $country: CountryCode,
-    $handle: String!
-  )
-  @inContext(language: $language, country: $country) {
-    page(handle: $handle) {
-      id
-      title
-      body
-      seo {
-        description
-        title
-      }
-    }
-  }
-` as const;
